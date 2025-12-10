@@ -1,0 +1,1337 @@
+
+<!DOCTYPE html>
+
+<html class="no-js" lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width,initial-scale=1" name="viewport"/>
+<meta content="AI-powered GitHub Actions workflow failure analysis and debugging assistant" name="description"/>
+<meta content="Ian Lintner" name="author"/>
+<link href="https://ianlintner.github.io/ai_summary_action/advanced/architecture/" rel="canonical"/>
+<link href="../../integrations/copilot/" rel="prev"/>
+<link href="../memory-and-caching/" rel="next"/>
+<link href="../../assets/images/favicon.png" rel="icon"/>
+<meta content="mkdocs-1.6.1, mkdocs-material-9.7.0" name="generator"/>
+<title>Architecture - AI Workflow Failure Summary Action</title>
+<link href="../../assets/stylesheets/main.618322db.min.css" rel="stylesheet"/>
+<link href="../../assets/stylesheets/palette.ab4e12ef.min.css" rel="stylesheet"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&amp;display=fallback" rel="stylesheet"/>
+<style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+<script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+<script id="__analytics">function __md_analytics(){function e(){dataLayer.push(arguments)}window.dataLayer=window.dataLayer||[],e("js",new Date),e("config","G-XXXXXXXXXX"),document.addEventListener("DOMContentLoaded",(function(){document.forms.search&&document.forms.search.query.addEventListener("blur",(function(){this.value&&e("event","search",{search_term:this.value})}));document$.subscribe((function(){var t=document.forms.feedback;if(void 0!==t)for(var a of t.querySelectorAll("[type=submit]"))a.addEventListener("click",(function(a){a.preventDefault();var n=document.location.pathname,d=this.getAttribute("data-md-value");e("event","feedback",{page:n,data:d}),t.firstElementChild.disabled=!0;var r=t.querySelector(".md-feedback__note [data-md-value='"+d+"']");r&&(r.hidden=!1)})),t.hidden=!1})),location$.subscribe((function(t){e("config","G-XXXXXXXXXX",{page_path:t.pathname})}))}));var t=document.createElement("script");t.async=!0,t.src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX",document.getElementById("__analytics").insertAdjacentElement("afterEnd",t)}</script>
+<script>"undefined"!=typeof __md_analytics&&__md_analytics()</script>
+</head>
+<body data-md-color-accent="indigo" data-md-color-primary="indigo" data-md-color-scheme="default" dir="ltr">
+<input autocomplete="off" class="md-toggle" data-md-toggle="drawer" id="__drawer" type="checkbox"/>
+<input autocomplete="off" class="md-toggle" data-md-toggle="search" id="__search" type="checkbox"/>
+<label class="md-overlay" for="__drawer"></label>
+<div data-md-component="skip">
+<a class="md-skip" href="#architecture">
+          Skip to content
+        </a>
+</div>
+<div data-md-component="announce">
+</div>
+<header class="md-header md-header--shadow" data-md-component="header">
+<nav aria-label="Header" class="md-header__inner md-grid">
+<a aria-label="AI Workflow Failure Summary Action" class="md-header__button md-logo" data-md-component="logo" href="../.." title="AI Workflow Failure Summary Action">
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"></path></svg>
+</a>
+<label class="md-header__button md-icon" for="__drawer">
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"></path></svg>
+</label>
+<div class="md-header__title" data-md-component="header-title">
+<div class="md-header__ellipsis">
+<div class="md-header__topic">
+<span class="md-ellipsis">
+            AI Workflow Failure Summary Action
+          </span>
+</div>
+<div class="md-header__topic" data-md-component="header-topic">
+<span class="md-ellipsis">
+            
+              Architecture
+            
+          </span>
+</div>
+</div>
+</div>
+<form class="md-header__option" data-md-component="palette">
+<input aria-label="Switch to dark mode" class="md-option" data-md-color-accent="indigo" data-md-color-media="(prefers-color-scheme: light)" data-md-color-primary="indigo" data-md-color-scheme="default" id="__palette_0" name="__palette" type="radio"/>
+<label class="md-header__button md-icon" for="__palette_1" hidden="" title="Switch to dark mode">
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"></path></svg>
+</label>
+<input aria-label="Switch to light mode" class="md-option" data-md-color-accent="indigo" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-primary="indigo" data-md-color-scheme="slate" id="__palette_1" name="__palette" type="radio"/>
+<label class="md-header__button md-icon" for="__palette_0" hidden="" title="Switch to light mode">
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"></path></svg>
+</label>
+</form>
+<script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+<label class="md-header__button md-icon" for="__search">
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"></path></svg>
+</label>
+<div class="md-search" data-md-component="search" role="dialog">
+<label class="md-search__overlay" for="__search"></label>
+<div class="md-search__inner" role="search">
+<form class="md-search__form" name="search">
+<input aria-label="Search" autocapitalize="off" autocomplete="off" autocorrect="off" class="md-search__input" data-md-component="search-query" name="query" placeholder="Search" required="" spellcheck="false" type="text"/>
+<label class="md-search__icon md-icon" for="__search">
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"></path></svg>
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"></path></svg>
+</label>
+<nav aria-label="Search" class="md-search__options">
+<button aria-label="Clear" class="md-search__icon md-icon" tabindex="-1" title="Clear" type="reset">
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"></path></svg>
+</button>
+</nav>
+<div class="md-search__suggest" data-md-component="search-suggest"></div>
+</form>
+<div class="md-search__output">
+<div class="md-search__scrollwrap" data-md-scrollfix="" tabindex="0">
+<div class="md-search-result" data-md-component="search-result">
+<div class="md-search-result__meta">
+            Initializing search
+          </div>
+<ol class="md-search-result__list" role="presentation"></ol>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="md-header__source">
+<a class="md-source" data-md-component="source" href="https://github.com/ianlintner/ai_summary_action" title="Go to repository">
+<div class="md-source__icon md-icon">
+<svg viewbox="0 0 512 512" xmlns="http://www.w3.org/2000/svg"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"></path></svg>
+</div>
+<div class="md-source__repository">
+    ianlintner/ai_summary_action
+  </div>
+</a>
+</div>
+</nav>
+</header>
+<div class="md-container" data-md-component="container">
+<main class="md-main" data-md-component="main">
+<div class="md-main__inner md-grid">
+<div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation">
+<div class="md-sidebar__scrollwrap">
+<div class="md-sidebar__inner">
+<nav aria-label="Navigation" class="md-nav md-nav--primary" data-md-level="0">
+<label class="md-nav__title" for="__drawer">
+<a aria-label="AI Workflow Failure Summary Action" class="md-nav__button md-logo" data-md-component="logo" href="../.." title="AI Workflow Failure Summary Action">
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"></path></svg>
+</a>
+    AI Workflow Failure Summary Action
+  </label>
+<div class="md-nav__source">
+<a class="md-source" data-md-component="source" href="https://github.com/ianlintner/ai_summary_action" title="Go to repository">
+<div class="md-source__icon md-icon">
+<svg viewbox="0 0 512 512" xmlns="http://www.w3.org/2000/svg"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"></path></svg>
+</div>
+<div class="md-source__repository">
+    ianlintner/ai_summary_action
+  </div>
+</a>
+</div>
+<ul class="md-nav__list" data-md-scrollfix="">
+<li class="md-nav__item">
+<a class="md-nav__link" href="../..">
+<span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item md-nav__item--section md-nav__item--nested">
+<input class="md-nav__toggle md-toggle md-toggle--indeterminate" id="__nav_2" type="checkbox"/>
+<label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
+<span class="md-ellipsis">
+    
+  
+    Getting Started
+  
+
+    
+  </span>
+<span class="md-nav__icon md-icon"></span>
+</label>
+<nav aria-expanded="false" aria-labelledby="__nav_2_label" class="md-nav" data-md-level="1">
+<label class="md-nav__title" for="__nav_2">
+<span class="md-nav__icon md-icon"></span>
+            
+  
+    Getting Started
+  
+
+          </label>
+<ul class="md-nav__list" data-md-scrollfix="">
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../quickstart/">
+<span class="md-ellipsis">
+    
+  
+    Quick Start
+  
+
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../installation/">
+<span class="md-ellipsis">
+    
+  
+    Installation
+  
+
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../configuration/">
+<span class="md-ellipsis">
+    
+  
+    Configuration
+  
+
+    
+  </span>
+</a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item md-nav__item--section md-nav__item--nested">
+<input class="md-nav__toggle md-toggle md-toggle--indeterminate" id="__nav_3" type="checkbox"/>
+<label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
+<span class="md-ellipsis">
+    
+  
+    Usage
+  
+
+    
+  </span>
+<span class="md-nav__icon md-icon"></span>
+</label>
+<nav aria-expanded="false" aria-labelledby="__nav_3_label" class="md-nav" data-md-level="1">
+<label class="md-nav__title" for="__nav_3">
+<span class="md-nav__icon md-icon"></span>
+            
+  
+    Usage
+  
+
+          </label>
+<ul class="md-nav__list" data-md-scrollfix="">
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../usage/custom-prompts/">
+<span class="md-ellipsis">
+    
+  
+    Custom Prompts
+  
+
+    
+  </span>
+</a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item md-nav__item--section md-nav__item--nested">
+<input class="md-nav__toggle md-toggle md-toggle--indeterminate" id="__nav_4" type="checkbox"/>
+<label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
+<span class="md-ellipsis">
+    
+  
+    Integrations
+  
+
+    
+  </span>
+<span class="md-nav__icon md-icon"></span>
+</label>
+<nav aria-expanded="false" aria-labelledby="__nav_4_label" class="md-nav" data-md-level="1">
+<label class="md-nav__title" for="__nav_4">
+<span class="md-nav__icon md-icon"></span>
+            
+  
+    Integrations
+  
+
+          </label>
+<ul class="md-nav__list" data-md-scrollfix="">
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../integrations/copilot/">
+<span class="md-ellipsis">
+    
+  
+    GitHub Copilot
+  
+
+    
+  </span>
+</a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+<input checked="" class="md-nav__toggle md-toggle" id="__nav_5" type="checkbox"/>
+<label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="">
+<span class="md-ellipsis">
+    
+  
+    Advanced
+  
+
+    
+  </span>
+<span class="md-nav__icon md-icon"></span>
+</label>
+<nav aria-expanded="true" aria-labelledby="__nav_5_label" class="md-nav" data-md-level="1">
+<label class="md-nav__title" for="__nav_5">
+<span class="md-nav__icon md-icon"></span>
+            
+  
+    Advanced
+  
+
+          </label>
+<ul class="md-nav__list" data-md-scrollfix="">
+<li class="md-nav__item md-nav__item--active">
+<input class="md-nav__toggle md-toggle" id="__toc" type="checkbox"/>
+<label class="md-nav__link md-nav__link--active" for="__toc">
+<span class="md-ellipsis">
+    
+  
+    Architecture
+  
+
+    
+  </span>
+<span class="md-nav__icon md-icon"></span>
+</label>
+<a class="md-nav__link md-nav__link--active" href="./">
+<span class="md-ellipsis">
+    
+  
+    Architecture
+  
+
+    
+  </span>
+</a>
+<nav aria-label="Table of contents" class="md-nav md-nav--secondary">
+<label class="md-nav__title" for="__toc">
+<span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+<ul class="md-nav__list" data-md-component="toc" data-md-scrollfix="">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#system-overview">
+<span class="md-ellipsis">
+      
+        System Overview
+      
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#component-architecture">
+<span class="md-ellipsis">
+      
+        Component Architecture
+      
+    </span>
+</a>
+<nav aria-label="Component Architecture" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#core-components">
+<span class="md-ellipsis">
+      
+        Core Components
+      
+    </span>
+</a>
+<nav aria-label="Core Components" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#1-entry-point-srcindexts">
+<span class="md-ellipsis">
+      
+        1. Entry Point (src/index.ts)
+      
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#2-analyzer-srcanalyzerts">
+<span class="md-ellipsis">
+      
+        2. Analyzer (src/analyzer.ts)
+      
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#3-github-client-srcgithub-clientts">
+<span class="md-ellipsis">
+      
+        3. GitHub Client (src/github-client.ts)
+      
+    </span>
+</a>
+</li>
+</ul>
+</nav>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#data-flow">
+<span class="md-ellipsis">
+      
+        Data Flow
+      
+    </span>
+</a>
+<nav aria-label="Data Flow" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#log-processing-pipeline">
+<span class="md-ellipsis">
+      
+        Log Processing Pipeline
+      
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#prompt-resolution">
+<span class="md-ellipsis">
+      
+        Prompt Resolution
+      
+    </span>
+</a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#llm-provider-architecture">
+<span class="md-ellipsis">
+      
+        LLM Provider Architecture
+      
+    </span>
+</a>
+<nav aria-label="LLM Provider Architecture" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#provider-selection">
+<span class="md-ellipsis">
+      
+        Provider Selection
+      
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#llm-invocation">
+<span class="md-ellipsis">
+      
+        LLM Invocation
+      
+    </span>
+</a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#state-management">
+<span class="md-ellipsis">
+      
+        State Management
+      
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#error-handling">
+<span class="md-ellipsis">
+      
+        Error Handling
+      
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#security-architecture">
+<span class="md-ellipsis">
+      
+        Security Architecture
+      
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#performance-characteristics">
+<span class="md-ellipsis">
+      
+        Performance Characteristics
+      
+    </span>
+</a>
+<nav aria-label="Performance Characteristics" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#time-complexity">
+<span class="md-ellipsis">
+      
+        Time Complexity
+      
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#resource-usage">
+<span class="md-ellipsis">
+      
+        Resource Usage
+      
+    </span>
+</a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#scalability">
+<span class="md-ellipsis">
+      
+        Scalability
+      
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#deployment-architecture">
+<span class="md-ellipsis">
+      
+        Deployment Architecture
+      
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#extension-points">
+<span class="md-ellipsis">
+      
+        Extension Points
+      
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#technology-stack">
+<span class="md-ellipsis">
+      
+        Technology Stack
+      
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#future-architecture-considerations">
+<span class="md-ellipsis">
+      
+        Future Architecture Considerations
+      
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#next-steps">
+<span class="md-ellipsis">
+      
+        Next Steps
+      
+    </span>
+</a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../memory-and-caching/">
+<span class="md-ellipsis">
+    
+  
+    Memory &amp; Caching
+  
+
+    
+  </span>
+</a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../contributing/">
+<span class="md-ellipsis">
+    
+  
+    Contributing
+  
+
+    
+  </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="../../changelog/">
+<span class="md-ellipsis">
+    
+  
+    Changelog
+  
+
+    
+  </span>
+</a>
+</li>
+</ul>
+</nav>
+</div>
+</div>
+</div>
+<div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc">
+<div class="md-sidebar__scrollwrap">
+<div class="md-sidebar__inner">
+<nav aria-label="Table of contents" class="md-nav md-nav--secondary">
+<label class="md-nav__title" for="__toc">
+<span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+<ul class="md-nav__list" data-md-component="toc" data-md-scrollfix="">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#system-overview">
+<span class="md-ellipsis">
+      
+        System Overview
+      
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#component-architecture">
+<span class="md-ellipsis">
+      
+        Component Architecture
+      
+    </span>
+</a>
+<nav aria-label="Component Architecture" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#core-components">
+<span class="md-ellipsis">
+      
+        Core Components
+      
+    </span>
+</a>
+<nav aria-label="Core Components" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#1-entry-point-srcindexts">
+<span class="md-ellipsis">
+      
+        1. Entry Point (src/index.ts)
+      
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#2-analyzer-srcanalyzerts">
+<span class="md-ellipsis">
+      
+        2. Analyzer (src/analyzer.ts)
+      
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#3-github-client-srcgithub-clientts">
+<span class="md-ellipsis">
+      
+        3. GitHub Client (src/github-client.ts)
+      
+    </span>
+</a>
+</li>
+</ul>
+</nav>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#data-flow">
+<span class="md-ellipsis">
+      
+        Data Flow
+      
+    </span>
+</a>
+<nav aria-label="Data Flow" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#log-processing-pipeline">
+<span class="md-ellipsis">
+      
+        Log Processing Pipeline
+      
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#prompt-resolution">
+<span class="md-ellipsis">
+      
+        Prompt Resolution
+      
+    </span>
+</a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#llm-provider-architecture">
+<span class="md-ellipsis">
+      
+        LLM Provider Architecture
+      
+    </span>
+</a>
+<nav aria-label="LLM Provider Architecture" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#provider-selection">
+<span class="md-ellipsis">
+      
+        Provider Selection
+      
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#llm-invocation">
+<span class="md-ellipsis">
+      
+        LLM Invocation
+      
+    </span>
+</a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#state-management">
+<span class="md-ellipsis">
+      
+        State Management
+      
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#error-handling">
+<span class="md-ellipsis">
+      
+        Error Handling
+      
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#security-architecture">
+<span class="md-ellipsis">
+      
+        Security Architecture
+      
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#performance-characteristics">
+<span class="md-ellipsis">
+      
+        Performance Characteristics
+      
+    </span>
+</a>
+<nav aria-label="Performance Characteristics" class="md-nav">
+<ul class="md-nav__list">
+<li class="md-nav__item">
+<a class="md-nav__link" href="#time-complexity">
+<span class="md-ellipsis">
+      
+        Time Complexity
+      
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#resource-usage">
+<span class="md-ellipsis">
+      
+        Resource Usage
+      
+    </span>
+</a>
+</li>
+</ul>
+</nav>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#scalability">
+<span class="md-ellipsis">
+      
+        Scalability
+      
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#deployment-architecture">
+<span class="md-ellipsis">
+      
+        Deployment Architecture
+      
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#extension-points">
+<span class="md-ellipsis">
+      
+        Extension Points
+      
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#technology-stack">
+<span class="md-ellipsis">
+      
+        Technology Stack
+      
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#future-architecture-considerations">
+<span class="md-ellipsis">
+      
+        Future Architecture Considerations
+      
+    </span>
+</a>
+</li>
+<li class="md-nav__item">
+<a class="md-nav__link" href="#next-steps">
+<span class="md-ellipsis">
+      
+        Next Steps
+      
+    </span>
+</a>
+</li>
+</ul>
+</nav>
+</div>
+</div>
+</div>
+<div class="md-content" data-md-component="content">
+<article class="md-content__inner md-typeset">
+<h1 id="architecture">Architecture<a class="headerlink" href="#architecture" title="Permanent link">¶</a></h1>
+<p>Understanding the internal architecture of AI Workflow Failure Summary Action.</p>
+<h2 id="system-overview">System Overview<a class="headerlink" href="#system-overview" title="Permanent link">¶</a></h2>
+<pre class="mermaid"><code>graph TB
+    subgraph "GitHub Actions Environment"
+        WF[Workflow Fails]
+        ACT[Action Triggered]
+    end
+
+    subgraph "AI Summary Action"
+        INPUT[Parse Inputs]
+        FETCH[Fetch Workflow Logs]
+        PROC[Process Logs]
+        LLM[LLM Client]
+        FMT[Format Output]
+    end
+
+    subgraph "External Services"
+        GH[GitHub API]
+        OAI[OpenAI]
+        ANT[Anthropic]
+        AZ[Azure OpenAI]
+        GHM[GitHub Models]
+    end
+
+    subgraph "Outputs"
+        SUM[Actions Summary]
+        ISS[GitHub Issue]
+        OUT[Action Outputs]
+    end
+
+    WF --&gt; ACT
+    ACT --&gt; INPUT
+    INPUT --&gt; FETCH
+    FETCH --&gt; GH
+    GH --&gt; PROC
+    PROC --&gt; LLM
+    LLM -.-&gt;|Provider| OAI
+    LLM -.-&gt;|Provider| ANT
+    LLM -.-&gt;|Provider| AZ
+    LLM -.-&gt;|Provider| GHM
+    LLM --&gt; FMT
+    FMT --&gt; SUM
+    FMT --&gt; ISS
+    FMT --&gt; OUT</code></pre>
+<h2 id="component-architecture">Component Architecture<a class="headerlink" href="#component-architecture" title="Permanent link">¶</a></h2>
+<h3 id="core-components">Core Components<a class="headerlink" href="#core-components" title="Permanent link">¶</a></h3>
+<h4 id="1-entry-point-srcindexts">1. <strong>Entry Point</strong> (<code>src/index.ts</code>)<a class="headerlink" href="#1-entry-point-srcindexts" title="Permanent link">¶</a></h4>
+<pre class="mermaid"><code>flowchart LR
+    START([Action Start]) --&gt; INPUTS[Get Inputs]
+    INPUTS --&gt; CONTEXT[Get GitHub Context]
+    CONTEXT --&gt; ANALYZE[Call Analyzer]
+    ANALYZE --&gt; OUTPUT[Set Outputs]
+    OUTPUT --&gt; SUMMARY[Write Summary]
+    SUMMARY --&gt; ISSUE{Create Issue?}
+    ISSUE --&gt;|Yes| CREATE[Create Issue]
+    ISSUE --&gt;|No| END([Action End])
+    CREATE --&gt; END</code></pre>
+<p><strong>Responsibilities:</strong>
+- Parse action inputs from workflow
+- Get GitHub context (repo, run ID, etc.)
+- Orchestrate the analysis workflow
+- Handle errors and set outputs
+- Create issues if requested</p>
+<h4 id="2-analyzer-srcanalyzerts">2. <strong>Analyzer</strong> (<code>src/analyzer.ts</code>)<a class="headerlink" href="#2-analyzer-srcanalyzerts" title="Permanent link">¶</a></h4>
+<pre class="mermaid"><code>flowchart TB
+    START([Analyze Request]) --&gt; LOGS[Fetch Failed Job Logs]
+    LOGS --&gt; CHECK{Logs Found?}
+    CHECK --&gt;|No| EMPTY[Return Empty Result]
+    CHECK --&gt;|Yes| LLM[Initialize LLM Client]
+    LLM --&gt; PROMPTS[Load Prompts]
+    PROMPTS --&gt; CUSTOM{Custom Prompts?}
+    CUSTOM --&gt;|Yes| LOAD[Load from Files]
+    CUSTOM --&gt;|No| DEFAULT[Use Defaults]
+    LOAD --&gt; FORMAT
+    DEFAULT --&gt; FORMAT[Format Prompt]
+    FORMAT --&gt; INVOKE[Invoke LLM]
+    INVOKE --&gt; PARSE[Parse Response]
+    PARSE --&gt; RETURN[Return Analysis]
+    EMPTY --&gt; END([End])
+    RETURN --&gt; END</code></pre>
+<p><strong>Responsibilities:</strong>
+- Fetch workflow logs via GitHub API
+- Load and process custom prompts
+- Initialize appropriate LLM provider
+- Format logs and prompts
+- Invoke LLM for analysis
+- Parse and return results</p>
+<h4 id="3-github-client-srcgithub-clientts">3. <strong>GitHub Client</strong> (<code>src/github-client.ts</code>)<a class="headerlink" href="#3-github-client-srcgithub-clientts" title="Permanent link">¶</a></h4>
+<pre class="mermaid"><code>flowchart LR
+    START([Client Request]) --&gt; AUTH[Authenticate]
+    AUTH --&gt; JOBS[List Workflow Jobs]
+    JOBS --&gt; FILTER[Filter Failed Jobs]
+    FILTER --&gt; FETCH[Fetch Logs for Each]
+    FETCH --&gt; TRUNCATE[Truncate to Max Lines]
+    TRUNCATE --&gt; RETURN[Return Processed Logs]
+    RETURN --&gt; END([End])</code></pre>
+<p><strong>Responsibilities:</strong>
+- Authenticate with GitHub API
+- Fetch workflow run information
+- Get logs for failed jobs
+- Truncate logs to configured limit
+- Create issues with analysis results</p>
+<h2 id="data-flow">Data Flow<a class="headerlink" href="#data-flow" title="Permanent link">¶</a></h2>
+<h3 id="log-processing-pipeline">Log Processing Pipeline<a class="headerlink" href="#log-processing-pipeline" title="Permanent link">¶</a></h3>
+<pre class="mermaid"><code>sequenceDiagram
+    participant A as Action
+    participant GH as GitHub API
+    participant P as Processor
+    participant L as LLM
+
+    A-&gt;&gt;GH: Get Workflow Run
+    GH--&gt;&gt;A: Run Details
+
+    A-&gt;&gt;GH: List Jobs for Run
+    GH--&gt;&gt;A: Job List
+
+    A-&gt;&gt;P: Filter Failed Jobs
+    P--&gt;&gt;A: Failed Job IDs
+
+    loop For Each Failed Job
+        A-&gt;&gt;GH: Download Logs
+        GH--&gt;&gt;A: Raw Logs
+        A-&gt;&gt;P: Truncate to max-log-lines
+        P--&gt;&gt;A: Processed Logs
+    end
+
+    A-&gt;&gt;P: Format for LLM
+    P--&gt;&gt;A: Formatted Prompt
+
+    A-&gt;&gt;L: Send for Analysis
+    L--&gt;&gt;A: AI Summary
+
+    A-&gt;&gt;GH: Post Summary/Issue</code></pre>
+<h3 id="prompt-resolution">Prompt Resolution<a class="headerlink" href="#prompt-resolution" title="Permanent link">¶</a></h3>
+<pre class="mermaid"><code>flowchart TB
+    START([Custom Prompt Input]) --&gt; CHECK{Is File Path?}
+    CHECK --&gt;|No| INLINE[Use as Inline Text]
+    CHECK --&gt;|Yes| PATH{Path Exists?}
+    PATH --&gt;|No| WARN[Log Warning]
+    PATH --&gt;|Yes| READ[Read File Content]
+    WARN --&gt; INLINE
+    READ --&gt; PROCESS[Process Variables]
+    INLINE --&gt; PROCESS
+    PROCESS --&gt; RETURN[Return Final Prompt]
+    RETURN --&gt; END([End])</code></pre>
+<h2 id="llm-provider-architecture">LLM Provider Architecture<a class="headerlink" href="#llm-provider-architecture" title="Permanent link">¶</a></h2>
+<h3 id="provider-selection">Provider Selection<a class="headerlink" href="#provider-selection" title="Permanent link">¶</a></h3>
+<pre class="mermaid"><code>graph TB
+    START([Provider Config]) --&gt; SWITCH{Provider Type}
+
+    SWITCH --&gt;|openai| OAI[OpenAI Client]
+    SWITCH --&gt;|azure-openai| AZ[Azure OpenAI Client]
+    SWITCH --&gt;|github-models| GHM[GitHub Models Client]
+    SWITCH --&gt;|anthropic| ANT[Anthropic Client]
+
+    OAI --&gt; VALIDATE_OAI{API Key Valid?}
+    AZ --&gt; VALIDATE_AZ{Config Complete?}
+    GHM --&gt; VALIDATE_GHM{Token Valid?}
+    ANT --&gt; VALIDATE_ANT{API Key Valid?}
+
+    VALIDATE_OAI --&gt;|Yes| CREATE_OAI[Create ChatOpenAI]
+    VALIDATE_AZ --&gt;|Yes| CREATE_AZ[Create ChatOpenAI + Azure]
+    VALIDATE_GHM --&gt;|Yes| CREATE_GHM[Create ChatOpenAI + GitHub]
+    VALIDATE_ANT --&gt;|Yes| CREATE_ANT[Create ChatAnthropic]
+
+    VALIDATE_OAI --&gt;|No| ERROR
+    VALIDATE_AZ --&gt;|No| ERROR
+    VALIDATE_GHM --&gt;|No| ERROR
+    VALIDATE_ANT --&gt;|No| ERROR[Throw Error]
+
+    CREATE_OAI --&gt; RETURN[Return Client]
+    CREATE_AZ --&gt; RETURN
+    CREATE_GHM --&gt; RETURN
+    CREATE_ANT --&gt; RETURN
+
+    RETURN --&gt; END([End])</code></pre>
+<h3 id="llm-invocation">LLM Invocation<a class="headerlink" href="#llm-invocation" title="Permanent link">¶</a></h3>
+<pre class="mermaid"><code>sequenceDiagram
+    participant A as Analyzer
+    participant C as LLM Client
+    participant P as Provider API
+
+    A-&gt;&gt;C: Initialize with Config
+    C-&gt;&gt;C: Validate Credentials
+
+    A-&gt;&gt;C: Invoke([SystemMessage, UserMessage])
+    C-&gt;&gt;C: Format Messages
+    C-&gt;&gt;P: HTTP Request
+
+    alt Success
+        P--&gt;&gt;C: Response with Content
+        C-&gt;&gt;C: Parse Response
+        C--&gt;&gt;A: Return Content String
+    else API Error
+        P--&gt;&gt;C: Error Response
+        C--&gt;&gt;A: Throw Error
+    else Timeout
+        P--xC: No Response
+        C--&gt;&gt;A: Throw Timeout Error
+    end</code></pre>
+<h2 id="state-management">State Management<a class="headerlink" href="#state-management" title="Permanent link">¶</a></h2>
+<p>The action is <strong>stateless</strong> - each execution is independent:</p>
+<pre class="mermaid"><code>stateDiagram-v2
+    [*] --&gt; Initialize: Workflow Fails
+    Initialize --&gt; FetchLogs: Get Inputs
+    FetchLogs --&gt; Analyze: Logs Retrieved
+    Analyze --&gt; Output: Analysis Complete
+    Output --&gt; CreateIssue: Issue Enabled
+    Output --&gt; Finish: Issue Disabled
+    CreateIssue --&gt; Finish: Issue Created
+    Finish --&gt; [*]: Action Complete
+
+    note right of Analyze
+        No persistent state
+        Fresh analysis each time
+    end note</code></pre>
+<h2 id="error-handling">Error Handling<a class="headerlink" href="#error-handling" title="Permanent link">¶</a></h2>
+<pre class="mermaid"><code>flowchart TB
+    START([Operation]) --&gt; TRY{Try}
+    TRY --&gt;|Success| SUCCESS[Return Result]
+    TRY --&gt;|Error| CATCH[Catch Exception]
+
+    CATCH --&gt; TYPE{Error Type}
+
+    TYPE --&gt;|API Error| LOG_API[Log API Error]
+    TYPE --&gt;|Auth Error| LOG_AUTH[Log Auth Error]
+    TYPE --&gt;|Network Error| LOG_NET[Log Network Error]
+    TYPE --&gt;|Other| LOG_OTHER[Log Generic Error]
+
+    LOG_API --&gt; FAIL[Set Action Failed]
+    LOG_AUTH --&gt; FAIL
+    LOG_NET --&gt; FAIL
+    LOG_OTHER --&gt; FAIL
+
+    SUCCESS --&gt; END([End])
+    FAIL --&gt; END</code></pre>
+<p><strong>Error Handling Strategy:</strong>
+- All errors caught at entry point
+- Specific error messages logged
+- Action marked as failed with descriptive message
+- No silent failures
+- No partial outputs on error</p>
+<h2 id="security-architecture">Security Architecture<a class="headerlink" href="#security-architecture" title="Permanent link">¶</a></h2>
+<pre class="mermaid"><code>graph TB
+    subgraph "Input Layer"
+        SECRETS[GitHub Secrets]
+        INPUTS[Action Inputs]
+    end
+
+    subgraph "Processing Layer"
+        MASK[Secret Masking]
+        VALIDATE[Input Validation]
+        SANITIZE[Log Sanitization]
+    end
+
+    subgraph "External Communication"
+        TLS[TLS/HTTPS Only]
+        AUTH[Authenticated Requests]
+    end
+
+    subgraph "Output Layer"
+        SUMMARY[Sanitized Summary]
+        ISSUE[Sanitized Issue]
+    end
+
+    SECRETS --&gt; MASK
+    INPUTS --&gt; VALIDATE
+    MASK --&gt; SANITIZE
+    VALIDATE --&gt; SANITIZE
+    SANITIZE --&gt; TLS
+    TLS --&gt; AUTH
+    AUTH --&gt; SUMMARY
+    AUTH --&gt; ISSUE</code></pre>
+<p><strong>Security Measures:</strong>
+- Secrets never logged or exposed
+- GitHub's automatic secret masking
+- TLS for all external communication
+- Authenticated API requests only
+- Minimal permissions required
+- No secret storage or persistence</p>
+<h2 id="performance-characteristics">Performance Characteristics<a class="headerlink" href="#performance-characteristics" title="Permanent link">¶</a></h2>
+<h3 id="time-complexity">Time Complexity<a class="headerlink" href="#time-complexity" title="Permanent link">¶</a></h3>
+<pre class="mermaid"><code>gantt
+    title Typical Action Execution Timeline
+    dateFormat  s
+    axisFormat %S
+
+    section Initialization
+    Parse Inputs     :a1, 0, 1s
+    Get Context      :a2, after a1, 1s
+
+    section Data Fetch
+    Fetch Jobs       :b1, after a2, 2s
+    Fetch Logs       :b2, after b1, 5s
+
+    section Analysis
+    Format Prompts   :c1, after b2, 1s
+    LLM Request      :c2, after c1, 15s
+    Parse Response   :c3, after c2, 1s
+
+    section Output
+    Write Summary    :d1, after c3, 1s
+    Create Issue     :d2, after d1, 2s</code></pre>
+<p><strong>Average Execution Time:</strong> 20-30 seconds
+- Dominated by LLM API latency (10-20s)
+- GitHub API calls: 3-5s
+- Processing: &lt;2s</p>
+<h3 id="resource-usage">Resource Usage<a class="headerlink" href="#resource-usage" title="Permanent link">¶</a></h3>
+<ul>
+<li><strong>Memory:</strong> ~100MB (Node.js + dependencies)</li>
+<li><strong>CPU:</strong> Minimal (I/O bound)</li>
+<li><strong>Network:</strong> </li>
+<li>Logs download: varies by log size</li>
+<li>LLM request: ~50KB (compressed)</li>
+<li>LLM response: ~5-10KB</li>
+</ul>
+<h2 id="scalability">Scalability<a class="headerlink" href="#scalability" title="Permanent link">¶</a></h2>
+<pre class="mermaid"><code>graph LR
+    A[Single Repo] --&gt; B[Multiple Workflows]
+    B --&gt; C[Many Failures]
+    C --&gt; D{Scaling Strategy}
+
+    D --&gt; E[Parallel Jobs]
+    D --&gt; F[Conditional Execution]
+    D --&gt; G[Rate Limiting]
+
+    E --&gt; H[Each Workflow = Separate Job]
+    F --&gt; I[Only Analyze New Failures]
+    G --&gt; J[Respect API Limits]</code></pre>
+<p><strong>Scalability Considerations:</strong>
+- Each workflow run is independent
+- Parallel execution across repositories
+- GitHub API rate limits apply
+- LLM provider rate limits apply
+- No shared state or bottlenecks</p>
+<h2 id="deployment-architecture">Deployment Architecture<a class="headerlink" href="#deployment-architecture" title="Permanent link">¶</a></h2>
+<pre class="mermaid"><code>flowchart TB
+    subgraph "Development"
+        SRC[Source Code]
+        BUILD[npm run build]
+    end
+
+    subgraph "Distribution"
+        DIST[dist/ Directory]
+        ACTION[action.yml]
+    end
+
+    subgraph "GitHub Registry"
+        TAG[Version Tag]
+        REF[Git Reference]
+    end
+
+    subgraph "Consumer Workflows"
+        USER1[Repo A Workflow]
+        USER2[Repo B Workflow]
+        USER3[Repo C Workflow]
+    end
+
+    SRC --&gt; BUILD
+    BUILD --&gt; DIST
+    DIST --&gt; TAG
+    ACTION --&gt; TAG
+    TAG --&gt; REF
+    REF --&gt; USER1
+    REF --&gt; USER2
+    REF --&gt; USER3</code></pre>
+<p><strong>Deployment Process:</strong>
+1. Code changes merged to main
+2. <code>npm run build</code> compiles TypeScript
+3. dist/ directory committed
+4. Version tag created
+5. Users reference tag in workflows</p>
+<h2 id="extension-points">Extension Points<a class="headerlink" href="#extension-points" title="Permanent link">¶</a></h2>
+<p>Areas designed for customization:</p>
+<pre class="mermaid"><code>mindmap
+  root((Extension Points))
+    Custom Prompts
+      System Prompt
+      User Prompt
+      Template Variables
+    LLM Providers
+      Add New Provider
+      Configure Existing
+      Custom Models
+    Output Formats
+      Summary Format
+      Issue Templates
+      Custom Outputs
+    Log Processing
+      Custom Filters
+      Format Handlers
+      Truncation Logic</code></pre>
+<h2 id="technology-stack">Technology Stack<a class="headerlink" href="#technology-stack" title="Permanent link">¶</a></h2>
+<div class="language-yaml highlight"><pre><span></span><code><span id="__span-0-1"><a href="#__codelineno-0-1" id="__codelineno-0-1" name="__codelineno-0-1"></a><span class="nt">Runtime</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Node.js 20</span>
+</span><span id="__span-0-2"><a href="#__codelineno-0-2" id="__codelineno-0-2" name="__codelineno-0-2"></a><span class="nt">Language</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">TypeScript 5.3+</span>
+</span><span id="__span-0-3"><a href="#__codelineno-0-3" id="__codelineno-0-3" name="__codelineno-0-3"></a><span class="nt">Framework</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">GitHub Actions Toolkit</span>
+</span><span id="__span-0-4"><a href="#__codelineno-0-4" id="__codelineno-0-4" name="__codelineno-0-4"></a><span class="nt">LLM Integration</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">LangChain</span>
+</span><span id="__span-0-5"><a href="#__codelineno-0-5" id="__codelineno-0-5" name="__codelineno-0-5"></a><span class="nt">Bundler</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Vercel ncc</span>
+</span><span id="__span-0-6"><a href="#__codelineno-0-6" id="__codelineno-0-6" name="__codelineno-0-6"></a><span class="nt">Dependencies</span><span class="p">:</span>
+</span><span id="__span-0-7"><a href="#__codelineno-0-7" id="__codelineno-0-7" name="__codelineno-0-7"></a><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">@actions/core</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">GitHub Actions SDK</span>
+</span><span id="__span-0-8"><a href="#__codelineno-0-8" id="__codelineno-0-8" name="__codelineno-0-8"></a><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">@actions/github</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">GitHub API client</span>
+</span><span id="__span-0-9"><a href="#__codelineno-0-9" id="__codelineno-0-9" name="__codelineno-0-9"></a><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">@langchain/openai</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">OpenAI integration</span>
+</span><span id="__span-0-10"><a href="#__codelineno-0-10" id="__codelineno-0-10" name="__codelineno-0-10"></a><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">@langchain/anthropic</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Anthropic integration</span>
+</span><span id="__span-0-11"><a href="#__codelineno-0-11" id="__codelineno-0-11" name="__codelineno-0-11"></a><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">@langchain/core</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">LangChain base types</span>
+</span></code></pre></div>
+<h2 id="future-architecture-considerations">Future Architecture Considerations<a class="headerlink" href="#future-architecture-considerations" title="Permanent link">¶</a></h2>
+<p>Potential enhancements:</p>
+<ol>
+<li><strong>Caching Layer</strong>: Cache similar failures to reduce LLM calls</li>
+<li><strong>Learning System</strong>: Learn from resolved issues</li>
+<li><strong>Multi-Step Analysis</strong>: Chain multiple LLM calls</li>
+<li><strong>Streaming Responses</strong>: Stream LLM output for faster feedback</li>
+<li><strong>Webhook Integration</strong>: Push notifications to external systems</li>
+</ol>
+<h2 id="next-steps">Next Steps<a class="headerlink" href="#next-steps" title="Permanent link">¶</a></h2>
+<ul>
+<li><a href="security.md">Security Best Practices</a></li>
+<li><a href="troubleshooting.md">Troubleshooting Guide</a></li>
+<li><a href="../../contributing/">Contributing Guide</a></li>
+</ul>
+</article>
+</div>
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+</div>
+<button class="md-top md-icon" data-md-component="top" hidden="" type="button">
+<svg viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"></path></svg>
+  Back to top
+</button>
+</main>
+<footer class="md-footer">
+<div class="md-footer-meta md-typeset">
+<div class="md-footer-meta__inner md-grid">
+<div class="md-copyright">
+<div class="md-copyright__highlight">
+      Copyright © 2024 Ian Lintner
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" rel="noopener" target="_blank">
+      Material for MkDocs
+    </a>
+</div>
+<div class="md-social">
+<a class="md-social__link" href="https://github.com/ianlintner" rel="noopener" target="_blank" title="github.com">
+<svg viewbox="0 0 512 512" xmlns="http://www.w3.org/2000/svg"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"></path></svg>
+</a>
+<a class="md-social__link" href="https://www.linkedin.com/in/ianlintner/" rel="noopener" target="_blank" title="www.linkedin.com">
+<svg viewbox="0 0 448 512" xmlns="http://www.w3.org/2000/svg"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M416 32H31.9C14.3 32 0 46.5 0 64.3v383.4C0 465.5 14.3 480 31.9 480H416c17.6 0 32-14.5 32-32.3V64.3c0-17.8-14.4-32.3-32-32.3M135.4 416H69V202.2h66.5V416zM102.2 96a38.5 38.5 0 1 1 0 77 38.5 38.5 0 1 1 0-77m282.1 320h-66.4V312c0-24.8-.5-56.7-34.5-56.7-34.6 0-39.9 27-39.9 54.9V416h-66.4V202.2h63.7v29.2h.9c8.9-16.8 30.6-34.5 62.9-34.5 67.2 0 79.7 44.3 79.7 101.9z"></path></svg>
+</a>
+</div>
+</div>
+</div>
+</footer>
+</div>
+<div class="md-dialog" data-md-component="dialog">
+<div class="md-dialog__inner md-typeset"></div>
+</div>
+<script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.instant", "navigation.tracking", "navigation.sections", "navigation.expand", "navigation.top", "search.suggest", "search.highlight", "content.code.copy", "content.code.annotate"], "search": "../../assets/javascripts/workers/search.7a47a382.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+<script src="../../assets/javascripts/bundle.e71a0d61.min.js"></script>
+</body>
+</html>
