@@ -1,0 +1,85 @@
+name: 'AI Workflow Failure Summary'
+description: 'Analyzes failed GitHub Actions workflow runs using AI and generates summaries for debugging'
+author: 'Ian Lintner'
+branding:
+  icon: 'alert-circle'
+  color: 'red'
+
+inputs:
+  github-token:
+    description: 'GitHub token for accessing workflow logs'
+    required: true
+    default: ${{ github.token }}
+  
+  llm-provider:
+    description: 'LLM provider to use (openai, azure-openai, github-models, anthropic)'
+    required: false
+    default: 'openai'
+  
+  openai-api-key:
+    description: 'OpenAI API key'
+    required: false
+  
+  openai-model:
+    description: 'OpenAI model to use'
+    required: false
+    default: 'gpt-4o-mini'
+  
+  azure-openai-api-key:
+    description: 'Azure OpenAI API key'
+    required: false
+  
+  azure-openai-endpoint:
+    description: 'Azure OpenAI endpoint'
+    required: false
+  
+  azure-openai-deployment:
+    description: 'Azure OpenAI deployment name'
+    required: false
+  
+  github-models-token:
+    description: 'GitHub Models API token (PAT with model access)'
+    required: false
+  
+  github-models-model:
+    description: 'GitHub Models model to use'
+    required: false
+    default: 'gpt-4o'
+  
+  anthropic-api-key:
+    description: 'Anthropic API key'
+    required: false
+  
+  anthropic-model:
+    description: 'Anthropic model to use'
+    required: false
+    default: 'claude-3-5-sonnet-20241022'
+  
+  max-log-lines:
+    description: 'Maximum number of log lines to analyze per job'
+    required: false
+    default: '500'
+  
+  create-issue:
+    description: 'Create a GitHub issue with the summary'
+    required: false
+    default: 'false'
+  
+  issue-label:
+    description: 'Label to add to created issues'
+    required: false
+    default: 'ai-analysis'
+
+outputs:
+  summary:
+    description: 'AI-generated summary of the workflow failures'
+  
+  failed-jobs:
+    description: 'JSON array of failed job names'
+  
+  issue-url:
+    description: 'URL of the created issue (if create-issue is true)'
+
+runs:
+  using: 'node20'
+  main: 'dist/index.js'

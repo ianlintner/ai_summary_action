@@ -1,0 +1,9 @@
+node_modules/
+lib/
+*.log
+.env
+.DS_Store
+coverage/
+
+# Keep dist/ for GitHub Action distribution
+!dist/
