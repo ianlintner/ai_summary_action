@@ -47,7 +47,7 @@ jobs:
       
       - name: Analyze Workflow Failure with OpenAI
         uses: ./
-        if: secrets.OPENAI_API_KEY != ''
+        continue-on-error: true
         with:
           github-token: ${{ github.token }}
           llm-provider: 'openai'
@@ -57,7 +57,7 @@ jobs:
       
       - name: Analyze Workflow Failure with GitHub Models
         uses: ./
-        if: secrets.GITHUB_MODELS_TOKEN != ''
+        continue-on-error: true
         with:
           github-token: ${{ github.token }}
           llm-provider: 'github-models'
@@ -66,7 +66,7 @@ jobs:
       
       - name: Analyze Workflow Failure with Anthropic
         uses: ./
-        if: secrets.ANTHROPIC_API_KEY != ''
+        continue-on-error: true
         with:
           github-token: ${{ github.token }}
           llm-provider: 'anthropic'

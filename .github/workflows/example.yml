@@ -40,7 +40,8 @@ jobs:
       
       - name: Analyze Workflow Failure with OpenAI
         uses: ./  # Use local action for testing
-        if: github.event_name == 'push' && secrets.OPENAI_API_KEY != ''
+        if: github.event_name == 'push'
+        continue-on-error: true
         with:
           github-token: ${{ github.token }}
           llm-provider: 'openai'
@@ -50,7 +51,8 @@ jobs:
       
       - name: Analyze Workflow Failure with GitHub Models
         uses: ./
-        if: github.event_name == 'push' && secrets.GITHUB_MODELS_TOKEN != ''
+        if: github.event_name == 'push'
+        continue-on-error: true
         with:
           github-token: ${{ github.token }}
           llm-provider: 'github-models'
@@ -59,7 +61,8 @@ jobs:
       
       - name: Analyze Workflow Failure with Anthropic
         uses: ./
-        if: github.event_name == 'push' && secrets.ANTHROPIC_API_KEY != ''
+        if: github.event_name == 'push'
+        continue-on-error: true
         with:
           github-token: ${{ github.token }}
           llm-provider: 'anthropic'
