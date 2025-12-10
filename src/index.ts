@@ -25,6 +25,10 @@ async function run(): Promise<void> {
     const githubModelsModel = core.getInput('github-models-model') || 'gpt-4o'
     const anthropicModel = core.getInput('anthropic-model') || 'claude-3-5-sonnet-20241022'
 
+    // Get custom prompts
+    const customSystemPrompt = core.getInput('custom-system-prompt')
+    const customUserPrompt = core.getInput('custom-user-prompt')
+
     // Get GitHub context
     const context = github.context
     const { owner, repo } = context.repo
@@ -48,7 +52,9 @@ async function run(): Promise<void> {
       githubModelsModel,
       anthropicApiKey,
       anthropicModel,
-      maxLogLines
+      maxLogLines,
+      customSystemPrompt,
+      customUserPrompt
     })
 
     // Set outputs

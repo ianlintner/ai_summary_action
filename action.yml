@@ -69,6 +69,14 @@ inputs:
     description: 'Label to add to created issues'
     required: false
     default: 'ai-analysis'
+  
+  custom-system-prompt:
+    description: 'Custom system prompt for AI analysis (overrides default). Supports file paths like .github/prompts/system.md'
+    required: false
+  
+  custom-user-prompt:
+    description: 'Custom user prompt template for AI analysis (overrides default). Supports file paths like .github/prompts/user.md'
+    required: false
 
 outputs:
   summary:

@@ -14,6 +14,8 @@ interface AnalyzerConfig {
     anthropicApiKey?: string;
     anthropicModel?: string;
     maxLogLines: number;
+    customSystemPrompt?: string;
+    customUserPrompt?: string;
 }
 interface AnalysisResult {
     summary: string;
