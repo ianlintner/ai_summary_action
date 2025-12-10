@@ -140,14 +140,16 @@ async function run(): Promise<void> {
     await core.summary.write()
 
     // Also log the summary to console for viewing in logs
-    core.info('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━')
-    core.info('🔍 AI WORKFLOW FAILURE ANALYSIS')
-    core.info('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━')
-    core.info('')
-    // Log each line of the summary
-    result.summary.split('\n').forEach(line => core.info(line))
-    core.info('')
-    core.info('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━')
+    if (result.summary) {
+      core.info('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━')
+      core.info('🔍 AI WORKFLOW FAILURE ANALYSIS')
+      core.info('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━')
+      core.info('')
+      // Log each line of the summary
+      result.summary.split('\n').forEach(line => core.info(line))
+      core.info('')
+      core.info('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━')
+    }
 
     // Comment on PR if requested and this is a PR run
     if (commentOnPr && isPullRequest && prNumber && result.summary) {
@@ -170,7 +172,7 @@ async function run(): Promise<void> {
 
     // Check if branch filtering allows issue creation
     let shouldCreateIssue = createIssue
-    if (createIssue && issueBranchFilter) {
+    if (createIssue && issueBranchFilter && issueBranchFilter.trim().length > 0) {
       const allowedBranches = issueBranchFilter.split(',').map(b => b.trim()).filter(b => b.length > 0)
       if (allowedBranches.length > 0 && !allowedBranches.includes(branch)) {
         core.info(`Branch '${branch}' not in issue-branch-filter list [${allowedBranches.join(', ')}], skipping issue creation`)
@@ -178,11 +180,13 @@ async function run(): Promise<void> {
       }
     }
 
-    // Create issue if requested and not a PR (or if explicitly enabled despite PR comment)
     // Prioritize PR comments: if this is a PR and commenting is enabled, skip issue creation unless explicitly requested
-    const skipIssueForPr = isPullRequest && commentOnPr && !createIssue
+    // Only create issue if shouldCreateIssue is true AND either:
+    // - This is not a PR, OR
+    // - This is a PR but createIssue was explicitly set to true (not just default false)
+    const shouldSkipIssueForPr = isPullRequest && commentOnPr && !createIssue
     
-    if (shouldCreateIssue && !skipIssueForPr && result.summary) {
+    if (shouldCreateIssue && !shouldSkipIssueForPr && result.summary) {
       try {
         const issueUrl = await createIssueWithSummary({
           githubToken,
