@@ -13,4 +13,13 @@ export declare function createIssueWithSummary({ githubToken, owner, repo, runId
     failedJobs: string[];
     label: string;
 }): Promise<string>;
+export declare function commentOnPR({ githubToken, owner, repo, prNumber, runId, summary, failedJobs }: {
+    githubToken: string;
+    owner: string;
+    repo: string;
+    prNumber: number;
+    runId: number;
+    summary: string;
+    failedJobs: string[];
+}): Promise<string>;
 export {};

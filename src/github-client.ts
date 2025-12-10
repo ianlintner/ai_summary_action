@@ -152,3 +152,51 @@ ${summary}
     throw error
   }
 }
+
+export async function commentOnPR({
+  githubToken,
+  owner,
+  repo,
+  prNumber,
+  runId,
+  summary,
+  failedJobs
+}: {
+  githubToken: string
+  owner: string
+  repo: string
+  prNumber: number
+  runId: number
+  summary: string
+  failedJobs: string[]
+}): Promise<string> {
+  const octokit = github.getOctokit(githubToken)
+
+  const body = `## 🤖 AI Workflow Failure Analysis
+
+**Workflow Run:** [#${runId}](https://github.com/${owner}/${repo}/actions/runs/${runId})
+**Failed Jobs:** ${failedJobs.join(', ')}
+
+---
+
+${summary}
+
+---
+
+*This comment was automatically created by the AI Summary Action*
+`
+
+  try {
+    const { data: comment } = await octokit.rest.issues.createComment({
+      owner,
+      repo,
+      issue_number: prNumber,
+      body
+    })
+
+    return comment.html_url
+  } catch (error) {
+    core.error(`Failed to create PR comment: ${error}`)
+    throw error
+  }
+}
