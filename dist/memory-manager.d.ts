@@ -64,9 +64,9 @@ export declare class MemoryManager {
      */
     getCommitChanges(commits: string[]): Promise<CommitChanges[]>;
     /**
-     * Format memory data for LLM prompt
+     * Format memory data for LLM prompt (static helper)
      */
-    formatMemoryForPrompt(memory: MemoryData | null): string;
+    static formatMemoryForPrompt(memory: MemoryData | null): string;
     /**
      * Clean old failures based on retention policy
      */

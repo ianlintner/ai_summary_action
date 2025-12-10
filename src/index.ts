@@ -103,7 +103,7 @@ async function run(): Promise<void> {
     if (enableMemory && existingMemory) {
       core.setOutput('historical-failures', JSON.stringify(existingMemory.failures.slice(-5)))
       core.setOutput('branch-patterns', JSON.stringify(existingMemory.branchHistory))
-      // TODO: Implement similar issues detection
+      // Similar issues detection coming in future release
       core.setOutput('similar-issues', '[]')
     }
 

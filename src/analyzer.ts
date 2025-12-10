@@ -186,19 +186,7 @@ ${job.logContent}
   let memoryContext = ''
   if (config.memoryData) {
     const { MemoryManager } = await import('./memory-manager')
-    const tempManager = new MemoryManager({
-      enabled: true,
-      strategy: 'actions-cache',
-      scope: 'branch',
-      retentionDays: 30,
-      maxHistoricalRuns: 10,
-      includeCommitChanges: true,
-      githubToken: config.githubToken,
-      owner: config.owner,
-      repo: config.repo,
-      branch: 'main'
-    })
-    memoryContext = tempManager.formatMemoryForPrompt(config.memoryData)
+    memoryContext = MemoryManager.formatMemoryForPrompt(config.memoryData)
   }
 
   const userPrompt = customUserPrompt 

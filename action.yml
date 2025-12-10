@@ -84,7 +84,7 @@ inputs:
     default: 'false'
   
   cache-strategy:
-    description: 'Cache storage strategy (actions-cache, github-issues, git-notes)'
+    description: 'Cache storage strategy (currently only actions-cache is supported, github-issues and git-notes coming soon)'
     required: false
     default: 'actions-cache'
   
@@ -125,7 +125,7 @@ outputs:
     description: 'Detected patterns from branch history (if enable-memory is true)'
   
   similar-issues:
-    description: 'Links to similar past issues (if enable-memory is true)'
+    description: 'Links to similar past issues (coming soon, currently returns empty array)'
 
 runs:
   using: 'node20'

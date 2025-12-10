@@ -95,12 +95,14 @@ export class MemoryManager {
         case 'actions-cache':
           return await this.loadFromActionsCache()
         case 'github-issues':
-          return await this.loadFromGitHubIssues()
+          core.warning('GitHub Issues cache strategy is not yet implemented. Using actions-cache instead.')
+          return await this.loadFromActionsCache()
         case 'git-notes':
-          return await this.loadFromGitNotes()
+          core.warning('Git Notes cache strategy is not yet implemented. Using actions-cache instead.')
+          return await this.loadFromActionsCache()
         default:
-          core.warning(`Unknown cache strategy: ${this.config.strategy}`)
-          return null
+          core.warning(`Unknown cache strategy: ${this.config.strategy}. Using actions-cache instead.`)
+          return await this.loadFromActionsCache()
       }
     } catch (error) {
       core.warning(`Failed to load memory: ${error}`)
@@ -127,13 +129,16 @@ export class MemoryManager {
           await this.saveToActionsCache(data)
           break
         case 'github-issues':
-          await this.saveToGitHubIssues(data)
+          core.warning('GitHub Issues cache strategy is not yet implemented. Using actions-cache instead.')
+          await this.saveToActionsCache(data)
           break
         case 'git-notes':
-          await this.saveToGitNotes(data)
+          core.warning('Git Notes cache strategy is not yet implemented. Using actions-cache instead.')
+          await this.saveToActionsCache(data)
           break
         default:
-          core.warning(`Unknown cache strategy: ${this.config.strategy}`)
+          core.warning(`Unknown cache strategy: ${this.config.strategy}. Using actions-cache instead.`)
+          await this.saveToActionsCache(data)
       }
     } catch (error) {
       core.warning(`Failed to save memory: ${error}`)
@@ -212,7 +217,7 @@ export class MemoryManager {
           files: data.files?.map(f => f.filename) || [],
           additions: data.stats?.additions || 0,
           deletions: data.stats?.deletions || 0,
-          relevantTo: [] // TODO: Determine relevance
+          relevantTo: [] // Future enhancement: analyze file paths to determine job relevance
         })
       } catch (error) {
         core.warning(`Failed to fetch commit ${commit}: ${error}`)
@@ -223,9 +228,9 @@ export class MemoryManager {
   }
 
   /**
-   * Format memory data for LLM prompt
+   * Format memory data for LLM prompt (static helper)
    */
-  formatMemoryForPrompt(memory: MemoryData | null): string {
+  static formatMemoryForPrompt(memory: MemoryData | null): string {
     if (!memory || memory.failures.length === 0) {
       return ''
     }
