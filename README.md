@@ -14,7 +14,10 @@
 - 🤖 **AI-Powered Analysis**: Uses LLM models to analyze failure logs and provide intelligent summaries
 - 🔌 **Multiple LLM Providers**: Supports OpenAI, Azure OpenAI, GitHub Models, and Anthropic
 - 📊 **Actionable Insights**: Generates structured summaries with root cause, error details, and fix recommendations
-- 🎯 **GitHub Integration**: Automatically creates issues with analysis results
+- 💬 **PR Comments**: Automatically comments on pull requests when failures occur (default behavior)
+- 🎯 **GitHub Integration**: Optionally creates issues with analysis results, with branch filtering
+- 📋 **Console Logging**: Summary is displayed in workflow logs for easy viewing
+- 🔄 **Output Reusability**: Summary can be used as input for other actions (Slack, email, etc.)
 - 🔍 **Copilot Ready**: Outputs formatted for GitHub Copilot and VSCode review
 - 🧠 **Memory & Caching**: Learns from past failures for context-aware analysis
 - 🎨 **Customizable Prompts**: Tailor AI analysis with custom prompts via `.github/prompts/`
@@ -73,6 +76,20 @@ jobs:
     anthropic-model: 'claude-3-5-sonnet-20241022'
 ```
 
+### Commenting on Pull Requests
+
+By default, the action will comment on the originating pull request instead of creating an issue when the workflow run is triggered by a PR:
+
+```yaml
+- name: Analyze Workflow Failure
+  uses: ianlintner/ai_summary_action@v1
+  with:
+    github-token: ${{ secrets.GITHUB_TOKEN }}
+    llm-provider: 'openai'
+    openai-api-key: ${{ secrets.OPENAI_API_KEY }}
+    comment-on-pr: 'true'  # This is the default
+```
+
 ### Creating Issues Automatically
 
 ```yaml
@@ -84,6 +101,40 @@ jobs:
     openai-api-key: ${{ secrets.OPENAI_API_KEY }}
     create-issue: 'true'
     issue-label: 'automated-analysis'
+    issue-branch-filter: 'main,develop'  # Optional: only create issues on specific branches
+```
+
+### Using Summary Output in Other Jobs
+
+The action outputs the summary as a string that can be used in subsequent jobs:
+
+```yaml
+jobs:
+  analyze-failure:
+    runs-on: ubuntu-latest
+    if: failure()
+    outputs:
+      summary: ${{ steps.analyze.outputs.summary }}
+      pr-number: ${{ steps.analyze.outputs.pr-number }}
+    steps:
+      - name: Analyze Workflow Failure
+        id: analyze
+        uses: ianlintner/ai_summary_action@v1
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          openai-api-key: ${{ secrets.OPENAI_API_KEY }}
+  
+  notify-slack:
+    runs-on: ubuntu-latest
+    needs: analyze-failure
+    steps:
+      - name: Send to Slack
+        uses: slackapi/slack-github-action@v1
+        with:
+          payload: |
+            {
+              "text": "Workflow failed: ${{ needs.analyze-failure.outputs.summary }}"
+            }
 ```
 
 ### Using Memory & Caching for Context-Aware Analysis
@@ -143,6 +194,8 @@ See the [Custom Prompts Guide](https://ianlintner.github.io/ai_summary_action/us
 | `max-log-lines` | Max log lines to analyze per job | No | `500` |
 | `create-issue` | Create GitHub issue with summary | No | `false` |
 | `issue-label` | Label for created issues | No | `ai-analysis` |
+| `issue-branch-filter` | Only create issues on specific branches (comma-separated, e.g., "main,develop") | No | `` (all branches) |
+| `comment-on-pr` | Comment on pull request if run is from a PR | No | `true` |
 | `custom-system-prompt` | Custom system prompt or file path | No | - |
 | `custom-user-prompt` | Custom user prompt template or file path | No | - |
 | `enable-memory` | Enable memory and caching | No | `false` |
@@ -161,6 +214,8 @@ See the [Custom Prompts Guide](https://ianlintner.github.io/ai_summary_action/us
 | `summary` | AI-generated summary of workflow failures |
 | `failed-jobs` | JSON array of failed job names |
 | `issue-url` | URL of created issue (if `create-issue` is true) |
+| `pr-comment-url` | URL of PR comment (if `comment-on-pr` is true and run is from a PR) |
+| `pr-number` | Pull request number if the workflow run originated from a PR |
 | `historical-failures` | JSON array of previous failures (if `enable-memory` is true) |
 | `branch-patterns` | Detected patterns from branch history (if `enable-memory` is true) |
 | `similar-issues` | Links to similar past issues (if `enable-memory` is true) |
