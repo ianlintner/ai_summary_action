@@ -40,6 +40,31 @@ jobs:
         with:
           path: ./site
 
+  # Analyze build failures with our own action (dogfooding!)
+  analyze-failure:
+    runs-on: ubuntu-latest
+    if: failure()
+    needs: [build]
+    permissions:
+      actions: read
+      contents: read
+      issues: write
+    
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      
+      - name: Analyze Build Failure with AI
+        uses: ./
+        continue-on-error: true
+        with:
+          github-token: ${{ github.token }}
+          llm-provider: 'openai'
+          openai-api-key: ${{ secrets.OPENAI_API_KEY }}
+          openai-model: 'gpt-4o-mini'
+          max-log-lines: '500'
+          create-issue: 'false'
+
   deploy:
     environment:
       name: github-pages

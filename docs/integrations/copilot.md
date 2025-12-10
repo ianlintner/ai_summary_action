@@ -414,6 +414,6 @@ Here's a complete flow from failure to fix:
 
 ## Next Steps
 
-- [Custom Prompts for Better Integration](custom-prompts.md)
+<!-- - [Custom Prompts for Better Integration](custom-prompts.md)
 - [VSCode Setup](vscode.md)
-- [CI/CD Patterns](cicd.md)
+- [CI/CD Patterns](cicd.md) -->

@@ -184,7 +184,7 @@ custom-system-prompt: 'You are a Python expert analyzing pytest failures...'
 custom-user-prompt: '.github/prompts/user-prompt.md'
 ```
 
-See [Custom Prompts](../usage/custom-prompts.md) for details.
+See [Custom Prompts](usage/custom-prompts.md) for details.
 
 ## Output Parameters
 
@@ -315,4 +315,4 @@ openai-api-key: ${{ secrets.OPENAI_API_KEY }}  # ✅ Good
 
 ## Troubleshooting Configuration
 
-See the [Troubleshooting Guide](../advanced/troubleshooting.md) for common configuration issues.
+<!-- See the [Troubleshooting Guide](../advanced/troubleshooting.md) for common configuration issues. -->
