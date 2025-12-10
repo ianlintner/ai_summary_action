@@ -1,0 +1,104 @@
+site_name: AI Workflow Failure Summary Action
+site_description: AI-powered GitHub Actions workflow failure analysis and debugging assistant
+site_author: Ian Lintner
+site_url: https://ianlintner.github.io/ai_summary_action/
+repo_name: ianlintner/ai_summary_action
+repo_url: https://github.com/ianlintner/ai_summary_action
+edit_uri: edit/main/docs/
+
+theme:
+  name: material
+  palette:
+    # Light mode
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    # Dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+  features:
+    - navigation.instant
+    - navigation.tracking
+    - navigation.sections
+    - navigation.expand
+    - navigation.top
+    - search.suggest
+    - search.highlight
+    - content.code.copy
+    - content.code.annotate
+  icon:
+    repo: fontawesome/brands/github
+
+plugins:
+  - search
+  - mermaid2
+
+markdown_extensions:
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+  - admonition
+  - pymdownx.details
+  - attr_list
+  - md_in_html
+  - toc:
+      permalink: true
+
+nav:
+  - Home: index.md
+  - Getting Started:
+    - Quick Start: quickstart.md
+    - Installation: installation.md
+    - Configuration: configuration.md
+  - Usage:
+    - Basic Usage: usage/basic.md
+    - Custom Prompts: usage/custom-prompts.md
+    - LLM Providers: usage/providers.md
+    - Issue Creation: usage/issues.md
+  - Integrations:
+    - GitHub Copilot: integrations/copilot.md
+    - VSCode: integrations/vscode.md
+    - CI/CD Patterns: integrations/cicd.md
+  - Advanced:
+    - Architecture: advanced/architecture.md
+    - Security: advanced/security.md
+    - Troubleshooting: advanced/troubleshooting.md
+  - Examples:
+    - Common Patterns: examples/patterns.md
+    - Custom Prompts: examples/custom-prompts.md
+  - Contributing: contributing.md
+  - Changelog: changelog.md
+
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/ianlintner
+    - icon: fontawesome/brands/linkedin
+      link: https://www.linkedin.com/in/ianlintner/
+  analytics:
+    provider: google
+    property: G-XXXXXXXXXX  # Replace with actual GA4 ID if needed
+
+copyright: Copyright &copy; 2024 Ian Lintner
