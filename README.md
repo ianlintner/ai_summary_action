@@ -173,6 +173,43 @@ export INPUT_OPENAI_API_KEY="your-key"
 node dist/index.js
 ```
 
+## Security Considerations
+
+This action processes workflow logs and sends them to external LLM providers for analysis. Please be aware of the following:
+
+### Data Handling
+
+- **Workflow Logs**: The action extracts logs from failed jobs and sends them to your chosen LLM provider
+- **Sensitive Data**: Ensure your workflows use GitHub's [secret masking](https://docs.github.com/en/actions/security-guides/encrypted-secrets) to prevent secrets from appearing in logs
+- **Log Truncation**: Only the last 500 lines (configurable) of each failed job are analyzed to limit data exposure
+
+### API Keys
+
+- **Always use GitHub Secrets**: Store all API keys (OpenAI, Anthropic, etc.) as repository or organization secrets
+- **Token Permissions**: The action requires `read` access to Actions logs and `write` access if creating issues
+
+### LLM Provider Trust
+
+- **Third-Party Processing**: Log data is sent to your chosen LLM provider for analysis
+- **Provider Selection**: Choose a provider that meets your organization's data privacy requirements
+- **Data Retention**: Review your LLM provider's data retention and usage policies
+
+### Issue Creation
+
+- **Public Repositories**: Be cautious when enabling automatic issue creation in public repos, as summaries may contain code snippets or error details
+- **Review Summaries**: Consider reviewing AI-generated summaries before making them public
+- **Access Control**: Issues are created in the same repository with the same visibility
+
+### Recommendations
+
+1. ✅ Use GitHub secrets for all API keys
+2. ✅ Enable secret masking in your workflows
+3. ✅ Avoid logging sensitive information
+4. ✅ Review your LLM provider's security and privacy policies
+5. ✅ Use the `max-log-lines` parameter to limit data sent to LLMs
+6. ✅ Consider disabling `create-issue` for public repositories
+7. ✅ Regularly rotate API keys
+
 ## License
 
 MIT
