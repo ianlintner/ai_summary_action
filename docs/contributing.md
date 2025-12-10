@@ -15,7 +15,7 @@ Thank you for your interest in contributing! This document provides guidelines a
 
 ## Code of Conduct
 
-This project adheres to a Code of Conduct that all contributors are expected to follow. Please read [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md) before contributing.
+This project adheres to a Code of Conduct that all contributors are expected to follow. Please read [CODE_OF_CONDUCT.md](https://github.com/ianlintner/ai_summary_action/blob/main/CODE_OF_CONDUCT.md) before contributing.
 
 ## Getting Started
 

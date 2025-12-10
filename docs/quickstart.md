@@ -138,19 +138,19 @@ Available for use in subsequent workflow steps:
 
 <div class="grid cards" markdown>
 
--   :material-cog: **[Configure Options](../configuration.md)**
+-   :material-cog: **[Configure Options](configuration.md)**
     
     Customize behavior, prompts, and more
 
--   :material-brain: **[Custom Prompts](../usage/custom-prompts.md)**
+-   :material-brain: **[Custom Prompts](usage/custom-prompts.md)**
     
     Tailor AI analysis to your needs
 
--   :material-creation: **[LLM Providers](../usage/providers.md)**
+<!-- -   :material-creation: **[LLM Providers](../usage/providers.md)**
     
-    Learn about all supported providers
+    Learn about all supported providers -->
 
--   :material-github: **[Copilot Integration](../integrations/copilot.md)**
+-   :material-github: **[Copilot Integration](integrations/copilot.md)**
     
     Use with GitHub Copilot for even better debugging
 
@@ -173,7 +173,7 @@ Available for use in subsequent workflow steps:
     - Check provider-specific requirements
 
 !!! tip "Need Help?"
-    - 📖 Check the [Troubleshooting Guide](../advanced/troubleshooting.md)
+    <!-- - 📖 Check the [Troubleshooting Guide](../advanced/troubleshooting.md) -->
     - 🐛 [Open an Issue](https://github.com/ianlintner/ai_summary_action/issues)
     - 💬 Ask in [Discussions](https://github.com/ianlintner/ai_summary_action/discussions)
 

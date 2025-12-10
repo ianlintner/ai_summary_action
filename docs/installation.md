@@ -195,7 +195,7 @@ Run this workflow manually from the Actions tab to test your setup.
 
 To upgrade to a newer version:
 
-1. Check the [Changelog](../changelog.md) for breaking changes
+1. Check the [Changelog](changelog.md) for breaking changes
 2. Update the version in your workflow:
    ```yaml
    - uses: ianlintner/ai_summary_action@v2.0.0  # New version
@@ -213,6 +213,6 @@ To remove the action:
 
 ## Next Steps
 
-- [Configuration Guide](../configuration.md) - Learn about all available options
+- [Configuration Guide](configuration.md) - Learn about all available options
 - [Quick Start](quickstart.md) - Get up and running quickly
-- [Examples](../examples/patterns.md) - See common usage patterns
+<!-- - [Examples](../examples/patterns.md) - See common usage patterns -->

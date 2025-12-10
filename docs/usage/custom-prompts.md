@@ -311,7 +311,7 @@ jobs:
 
 ## Prompt Library
 
-See our [Examples](../examples/custom-prompts.md) page for a collection of ready-to-use prompts for common scenarios.
+<!-- See our [Examples](../examples/custom-prompts.md) page for a collection of ready-to-use prompts for common scenarios. -->
 
 ## GitHub Copilot Integration
 
@@ -349,6 +349,6 @@ Then ask Copilot: "Based on the AI failure analysis, suggest fixes for the faile
 
 ## Next Steps
 
-- [View Example Prompts](../examples/custom-prompts.md)
-- [Learn About LLM Providers](providers.md)
+<!-- - [View Example Prompts](../examples/custom-prompts.md)
+- [Learn About LLM Providers](providers.md) -->
 - [Integration with Copilot](../integrations/copilot.md)

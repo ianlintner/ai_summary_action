@@ -496,6 +496,6 @@ Potential enhancements:
 
 ## Next Steps
 
-- [Security Best Practices](security.md)
-- [Troubleshooting Guide](troubleshooting.md)
+<!-- - [Security Best Practices](security.md)
+- [Troubleshooting Guide](troubleshooting.md) -->
 - [Contributing Guide](../contributing.md)

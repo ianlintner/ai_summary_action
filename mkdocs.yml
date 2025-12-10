@@ -73,22 +73,22 @@ nav:
     - Installation: installation.md
     - Configuration: configuration.md
   - Usage:
-    - Basic Usage: usage/basic.md
+    # - Basic Usage: usage/basic.md
     - Custom Prompts: usage/custom-prompts.md
-    - LLM Providers: usage/providers.md
-    - Issue Creation: usage/issues.md
+    # - LLM Providers: usage/providers.md
+    # - Issue Creation: usage/issues.md
   - Integrations:
     - GitHub Copilot: integrations/copilot.md
-    - VSCode: integrations/vscode.md
-    - CI/CD Patterns: integrations/cicd.md
+    # - VSCode: integrations/vscode.md
+    # - CI/CD Patterns: integrations/cicd.md
   - Advanced:
     - Architecture: advanced/architecture.md
     - Memory & Caching: advanced/memory-and-caching.md
-    - Security: advanced/security.md
-    - Troubleshooting: advanced/troubleshooting.md
-  - Examples:
-    - Common Patterns: examples/patterns.md
-    - Custom Prompts: examples/custom-prompts.md
+    # - Security: advanced/security.md
+    # - Troubleshooting: advanced/troubleshooting.md
+  # - Examples:
+    # - Common Patterns: examples/patterns.md
+    # - Custom Prompts: examples/custom-prompts.md
   - Contributing: contributing.md
   - Changelog: changelog.md
 
