@@ -1,7 +1,7 @@
 import * as core from '@actions/core'
 import * as github from '@actions/github'
 import { analyzeWorkflowFailure } from './analyzer'
-import { createIssueWithSummary } from './github-client'
+import { createIssueWithSummary, commentOnPR } from './github-client'
 import { MemoryManager } from './memory-manager'
 
 async function run(): Promise<void> {
@@ -12,6 +12,8 @@ async function run(): Promise<void> {
     const maxLogLines = parseInt(core.getInput('max-log-lines') || '500')
     const createIssue = core.getInput('create-issue') === 'true'
     const issueLabel = core.getInput('issue-label')
+    const issueBranchFilter = core.getInput('issue-branch-filter')
+    const commentOnPr = core.getInput('comment-on-pr') === 'true'
 
     // Get LLM provider credentials
     const openaiApiKey = core.getInput('openai-api-key')
@@ -45,7 +47,16 @@ async function run(): Promise<void> {
     const branch = context.ref.replace('refs/heads/', '')
     const commit = context.sha
 
+    // Detect if this workflow run is from a pull request
+    const prNumber = context.payload.pull_request?.number
+    const isPullRequest = !!prNumber
+
     core.info(`Analyzing workflow run ${runId} for ${owner}/${repo}`)
+    if (isPullRequest) {
+      core.info(`This run is associated with PR #${prNumber}`)
+    }
+    core.info(`Branch: ${branch}`)
+    core.info(`Commit: ${commit}`)
 
     // Initialize memory manager
     let memoryManager: MemoryManager | undefined
@@ -98,6 +109,10 @@ async function run(): Promise<void> {
     // Set outputs
     core.setOutput('summary', result.summary)
     core.setOutput('failed-jobs', JSON.stringify(result.failedJobs))
+    
+    if (isPullRequest) {
+      core.setOutput('pr-number', prNumber)
+    }
 
     // Set memory outputs if enabled
     if (enableMemory && existingMemory) {
@@ -119,24 +134,70 @@ async function run(): Promise<void> {
       await memoryManager.saveMemory(updatedMemory)
     }
 
-    // Display summary
+    // Display summary in GitHub Actions Summary UI
     core.summary.addHeading('🔍 AI Workflow Failure Analysis', 1)
     core.summary.addRaw(result.summary)
     await core.summary.write()
 
-    // Create issue if requested
-    if (createIssue && result.summary) {
-      const issueUrl = await createIssueWithSummary({
-        githubToken,
-        owner,
-        repo,
-        runId,
-        summary: result.summary,
-        failedJobs: result.failedJobs,
-        label: issueLabel
-      })
-      core.setOutput('issue-url', issueUrl)
-      core.info(`Created issue: ${issueUrl}`)
+    // Also log the summary to console for viewing in logs
+    core.info('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━')
+    core.info('🔍 AI WORKFLOW FAILURE ANALYSIS')
+    core.info('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━')
+    core.info('')
+    // Log each line of the summary
+    result.summary.split('\n').forEach(line => core.info(line))
+    core.info('')
+    core.info('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━')
+
+    // Comment on PR if requested and this is a PR run
+    if (commentOnPr && isPullRequest && prNumber && result.summary) {
+      try {
+        const commentUrl = await commentOnPR({
+          githubToken,
+          owner,
+          repo,
+          prNumber,
+          runId,
+          summary: result.summary,
+          failedJobs: result.failedJobs
+        })
+        core.setOutput('pr-comment-url', commentUrl)
+        core.info(`💬 Added comment to PR #${prNumber}: ${commentUrl}`)
+      } catch (error) {
+        core.warning(`Failed to comment on PR: ${error}`)
+      }
+    }
+
+    // Check if branch filtering allows issue creation
+    let shouldCreateIssue = createIssue
+    if (createIssue && issueBranchFilter) {
+      const allowedBranches = issueBranchFilter.split(',').map(b => b.trim()).filter(b => b.length > 0)
+      if (allowedBranches.length > 0 && !allowedBranches.includes(branch)) {
+        core.info(`Branch '${branch}' not in issue-branch-filter list [${allowedBranches.join(', ')}], skipping issue creation`)
+        shouldCreateIssue = false
+      }
+    }
+
+    // Create issue if requested and not a PR (or if explicitly enabled despite PR comment)
+    // Prioritize PR comments: if this is a PR and commenting is enabled, skip issue creation unless explicitly requested
+    const skipIssueForPr = isPullRequest && commentOnPr && !createIssue
+    
+    if (shouldCreateIssue && !skipIssueForPr && result.summary) {
+      try {
+        const issueUrl = await createIssueWithSummary({
+          githubToken,
+          owner,
+          repo,
+          runId,
+          summary: result.summary,
+          failedJobs: result.failedJobs,
+          label: issueLabel
+        })
+        core.setOutput('issue-url', issueUrl)
+        core.info(`📝 Created issue: ${issueUrl}`)
+      } catch (error) {
+        core.warning(`Failed to create issue: ${error}`)
+      }
     }
 
     core.info('✅ Analysis complete')

@@ -70,6 +70,16 @@ inputs:
     required: false
     default: 'ai-analysis'
   
+  issue-branch-filter:
+    description: 'Only create issues on specific branches (comma-separated list, e.g., "main,develop"). Leave empty to create on all branches.'
+    required: false
+    default: ''
+  
+  comment-on-pr:
+    description: 'Comment on pull request if the workflow run originated from a PR'
+    required: false
+    default: 'true'
+  
   custom-system-prompt:
     description: 'Custom system prompt for AI analysis (overrides default). Supports file paths like .github/prompts/system.md'
     required: false
@@ -117,6 +127,12 @@ outputs:
   
   issue-url:
     description: 'URL of the created issue (if create-issue is true)'
+  
+  pr-comment-url:
+    description: 'URL of the PR comment (if comment-on-pr is true and run is from a PR)'
+  
+  pr-number:
+    description: 'Pull request number if the workflow run originated from a PR'
   
   historical-failures:
     description: 'JSON array of previous failure summaries (if enable-memory is true)'
