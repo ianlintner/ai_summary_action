@@ -1,0 +1,62 @@
+name: Example Usage
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+  workflow_dispatch:
+
+jobs:
+  # Example job that might fail
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      
+      - name: Install dependencies
+        run: npm ci
+      
+      - name: Run tests
+        run: npm test || true  # Continue on failure to test the analyzer
+  
+  # Analyze failures if any job fails
+  analyze-on-failure:
+    runs-on: ubuntu-latest
+    # Run this job if any previous job failed
+    if: failure()
+    needs: [test]
+    
+    steps:
+      - name: Analyze Workflow Failure with OpenAI
+        uses: ./  # Use local action for testing
+        if: github.event_name == 'push' && vars.OPENAI_API_KEY != ''
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          llm-provider: 'openai'
+          openai-api-key: ${{ secrets.OPENAI_API_KEY }}
+          openai-model: 'gpt-4o-mini'
+          max-log-lines: '500'
+      
+      - name: Analyze Workflow Failure with GitHub Models
+        uses: ./
+        if: github.event_name == 'push' && vars.GITHUB_MODELS_TOKEN != ''
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          llm-provider: 'github-models'
+          github-models-token: ${{ secrets.GITHUB_MODELS_TOKEN }}
+          github-models-model: 'gpt-4o'
+      
+      - name: Analyze Workflow Failure with Anthropic
+        uses: ./
+        if: github.event_name == 'push' && vars.ANTHROPIC_API_KEY != ''
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          llm-provider: 'anthropic'
+          anthropic-api-key: ${{ secrets.ANTHROPIC_API_KEY }}
+          anthropic-model: 'claude-3-5-sonnet-20241022'
