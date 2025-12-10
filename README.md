@@ -4,9 +4,8 @@
 [![GitHub Marketplace](https://img.shields.io/badge/Marketplace-AI%20Workflow%20Summary-blue.svg?colorA=24292e&colorB=0366d6&style=flat&longCache=true&logo=data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA4AAAAOCAYAAAAfSC3RAAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAAM6wAADOsB5dZE0gAAABl0RVh0U29mdHdhcmUAd3d3Lmlua3NjYXBlLm9yZ5vuPBoAAAERSURBVCiRhZG/SsMxFEZPfsVJ61jbxaF0cRQRcRJ9hlYn30IHN/+9iquDCOIsblIrOjqKgy5aKoJQj4O3EEtbPwhJbr6Te28CmdSKeqzeqr0YbfVIrTBKakvtOl5dtTkK+v4HfA9PEyBFCY9AGVgCBLaBp1jPAyfAJ/AAdIEG0dNAiyP7+K1qIfMdonZic6+WJoBJvQlvuwDqcXadUuqPA1NKAlexbRTAIMvMOCjTbMwl1LtI/6KWJ5Q6rT6Ht1MA58AX8Apcqqt5r2qhrgAXQC3CZ6i1+KMd9TRu3MvA3aH/fFPnBodb6oe6HM8+lYHrGdRXW8M9bMZtPXUji69lmf5Cmamq7quNLFZXD9Rq7v0Bpc1o/tp0fisAAAAASUVORK5CYII=)](https://github.com/marketplace/actions/ai-workflow-failure-summary)
 [![License](https://img.shields.io/github/license/ianlintner/ai_summary_action?style=flat-square)](LICENSE)
 [![Documentation](https://img.shields.io/badge/docs-available-brightgreen?style=flat-square)](https://ianlintner.github.io/ai_summary_action/)
-[![CI](https://img.shields.io/github/actions/workflow/status/ianlintner/ai_summary_action/test-analyzer.yml?branch=main&style=flat-square&label=tests)](https://github.com/ianlintner/ai_summary_action/actions)
+[![CI](https://github.com/ianlintner/ai_summary_action/actions/workflows/example.yml/badge.svg)](https://github.com/ianlintner/ai_summary_action/actions/workflows/example.yml)
 
-A GitHub Action that automatically analyzes failed workflow runs using AI (via LangChain) and generates actionable summaries to help debug and fix issues quickly.
 
 <img width="1101" height="806" alt="Screenshot 2025-12-10 at 13 31 12" src="https://github.com/user-attachments/assets/3462b6fb-9e8d-49de-aa7e-2d3b1071ea0b" />
 
