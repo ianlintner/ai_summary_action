@@ -8,6 +8,8 @@
 
 A GitHub Action that automatically analyzes failed workflow runs using AI (via LangChain) and generates actionable summaries to help debug and fix issues quickly.
 
+<img width="1101" height="806" alt="Screenshot 2025-12-10 at 13 31 12" src="https://github.com/user-attachments/assets/3462b6fb-9e8d-49de-aa7e-2d3b1071ea0b" />
+
 ## Features
 
 - 🤖 **AI-Powered Analysis**: Uses LLM models to analyze failure logs and provide intelligent summaries
