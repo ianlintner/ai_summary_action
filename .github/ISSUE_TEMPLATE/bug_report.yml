@@ -1,0 +1,102 @@
+name: Bug Report
+description: Report a bug or issue with the AI Workflow Failure Summary Action
+title: "[Bug]: "
+labels: ["bug", "triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to fill out this bug report!
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+      description: A clear and concise description of what the bug is.
+      placeholder: Tell us what went wrong
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Steps to Reproduce
+      description: Steps to reproduce the behavior
+      placeholder: |
+        1. Configure action with...
+        2. Trigger workflow...
+        3. See error...
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected Behavior
+      description: What did you expect to happen?
+      placeholder: The action should...
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual Behavior
+      description: What actually happened?
+      placeholder: Instead, the action...
+    validations:
+      required: true
+
+  - type: textarea
+    id: workflow
+    attributes:
+      label: Workflow Configuration
+      description: Please paste your workflow YAML (remove secrets!)
+      render: yaml
+      placeholder: |
+        name: CI
+        on: [push]
+        jobs:
+          test:
+            steps:
+              - uses: ianlintner/ai_summary_action@v1
+                with:
+                  ...
+
+  - type: input
+    id: version
+    attributes:
+      label: Action Version
+      description: Which version of the action are you using?
+      placeholder: "v1.0.0"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: llm-provider
+    attributes:
+      label: LLM Provider
+      description: Which LLM provider are you using?
+      options:
+        - OpenAI
+        - Azure OpenAI
+        - GitHub Models
+        - Anthropic
+        - Other
+    validations:
+      required: true
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: Action Logs
+      description: Relevant logs from the action execution
+      render: shell
+      placeholder: Paste logs here...
+
+  - type: textarea
+    id: context
+    attributes:
+      label: Additional Context
+      description: Any other context about the problem
+      placeholder: Other relevant information...

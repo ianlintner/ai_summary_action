@@ -1,5 +1,11 @@
 # AI Workflow Failure Summary Action
 
+[![GitHub release](https://img.shields.io/github/v/release/ianlintner/ai_summary_action?style=flat-square)](https://github.com/ianlintner/ai_summary_action/releases)
+[![GitHub Marketplace](https://img.shields.io/badge/Marketplace-AI%20Workflow%20Summary-blue.svg?colorA=24292e&colorB=0366d6&style=flat&longCache=true&logo=data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA4AAAAOCAYAAAAfSC3RAAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAAM6wAADOsB5dZE0gAAABl0RVh0U29mdHdhcmUAd3d3Lmlua3NjYXBlLm9yZ5vuPBoAAAERSURBVCiRhZG/SsMxFEZPfsVJ61jbxaF0cRQRcRJ9hlYn30IHN/+9iquDCOIsblIrOjqKgy5aKoJQj4O3EEtbPwhJbr6Te28CmdSKeqzeqr0YbfVIrTBKakvtOl5dtTkK+v4HfA9PEyBFCY9AGVgCBLaBp1jPAyfAJ/AAdIEG0dNAiyP7+K1qIfMdonZic6+WJoBJvQlvuwDqcXadUuqPA1NKAlexbRTAIMvMOCjTbMwl1LtI/6KWJ5Q6rT6Ht1MA58AX8Apcqqt5r2qhrgAXQC3CZ6i1+KMd9TRu3MvA3aH/fFPnBodb6oe6HM8+lYHrGdRXW8M9bMZtPXUji69lmf5Cmamq7quNLFZXD9Rq7v0Bpc1o/tp0fisAAAAASUVORK5CYII=)](https://github.com/marketplace/actions/ai-workflow-failure-summary)
+[![License](https://img.shields.io/github/license/ianlintner/ai_summary_action?style=flat-square)](LICENSE)
+[![Documentation](https://img.shields.io/badge/docs-available-brightgreen?style=flat-square)](https://ianlintner.github.io/ai_summary_action/)
+[![CI](https://img.shields.io/github/actions/workflow/status/ianlintner/ai_summary_action/test-analyzer.yml?branch=main&style=flat-square&label=tests)](https://github.com/ianlintner/ai_summary_action/actions)
+
 A GitHub Action that automatically analyzes failed workflow runs using AI (via LangChain) and generates actionable summaries to help debug and fix issues quickly.
 
 ## Features
@@ -9,6 +15,8 @@ A GitHub Action that automatically analyzes failed workflow runs using AI (via L
 - 📊 **Actionable Insights**: Generates structured summaries with root cause, error details, and fix recommendations
 - 🎯 **GitHub Integration**: Automatically creates issues with analysis results
 - 🔍 **Copilot Ready**: Outputs formatted for GitHub Copilot and VSCode review
+- 🧠 **Memory & Caching**: Learns from past failures for context-aware analysis
+- 🎨 **Customizable Prompts**: Tailor AI analysis with custom prompts via `.github/prompts/`
 
 ## Usage
 
@@ -77,6 +85,45 @@ jobs:
     issue-label: 'automated-analysis'
 ```
 
+### Using Memory & Caching for Context-Aware Analysis
+
+Enable memory to help the AI understand past failures and provide better recommendations:
+
+```yaml
+- name: Analyze Workflow Failure
+  uses: ianlintner/ai_summary_action@v1
+  with:
+    github-token: ${{ secrets.GITHUB_TOKEN }}
+    llm-provider: 'openai'
+    openai-api-key: ${{ secrets.OPENAI_API_KEY }}
+    enable-memory: 'true'
+    cache-strategy: 'actions-cache'
+    memory-scope: 'branch'
+    max-historical-runs: '10'
+```
+
+With memory enabled, the AI can:
+- Identify recurring issues
+- Reference previous failures and attempted fixes
+- Detect patterns across multiple runs
+- Provide more informed recommendations based on history
+
+### Customizing AI Prompts
+
+Tailor the AI analysis to your specific needs with custom prompts:
+
+```yaml
+- name: Analyze Workflow Failure
+  uses: ianlintner/ai_summary_action@v1
+  with:
+    github-token: ${{ secrets.GITHUB_TOKEN }}
+    openai-api-key: ${{ secrets.OPENAI_API_KEY }}
+    custom-system-prompt: '.github/prompts/system-prompt.md'
+    custom-user-prompt: '.github/prompts/user-prompt.md'
+```
+
+See the [Custom Prompts Guide](https://ianlintner.github.io/ai_summary_action/usage/custom-prompts/) for examples.
+
 ## Inputs
 
 | Input | Description | Required | Default |
@@ -95,6 +142,14 @@ jobs:
 | `max-log-lines` | Max log lines to analyze per job | No | `500` |
 | `create-issue` | Create GitHub issue with summary | No | `false` |
 | `issue-label` | Label for created issues | No | `ai-analysis` |
+| `custom-system-prompt` | Custom system prompt or file path | No | - |
+| `custom-user-prompt` | Custom user prompt template or file path | No | - |
+| `enable-memory` | Enable memory and caching | No | `false` |
+| `cache-strategy` | Cache storage strategy (actions-cache, github-issues, git-notes) | No | `actions-cache` |
+| `memory-scope` | Memory scope (branch, repository, workflow) | No | `branch` |
+| `memory-retention-days` | Days to retain memory data | No | `30` |
+| `max-historical-runs` | Max historical runs to include | No | `10` |
+| `include-commit-changes` | Include recent commit changes | No | `true` |
 
 *Required based on chosen `llm-provider`
 
@@ -105,6 +160,9 @@ jobs:
 | `summary` | AI-generated summary of workflow failures |
 | `failed-jobs` | JSON array of failed job names |
 | `issue-url` | URL of created issue (if `create-issue` is true) |
+| `historical-failures` | JSON array of previous failures (if `enable-memory` is true) |
+| `branch-patterns` | Detected patterns from branch history (if `enable-memory` is true) |
+| `similar-issues` | Links to similar past issues (if `enable-memory` is true) |
 
 ## LLM Provider Setup
 

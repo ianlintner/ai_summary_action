@@ -1,9 +1,12 @@
 import * as core from '@actions/core'
+import * as fs from 'fs'
+import * as path from 'path'
 import { ChatOpenAI } from '@langchain/openai'
 import { ChatAnthropic } from '@langchain/anthropic'
 import { BaseChatModel } from '@langchain/core/language_models/chat_models'
 import { HumanMessage, SystemMessage } from '@langchain/core/messages'
 import { getWorkflowRunLogs } from './github-client'
+import { MemoryData } from './memory-manager'
 
 interface AnalyzerConfig {
   githubToken: string
@@ -21,6 +24,9 @@ interface AnalyzerConfig {
   anthropicApiKey?: string
   anthropicModel?: string
   maxLogLines: number
+  customSystemPrompt?: string
+  customUserPrompt?: string
+  memoryData?: MemoryData | null
 }
 
 interface AnalysisResult {
@@ -82,6 +88,37 @@ function createLLMClient(config: AnalyzerConfig): BaseChatModel {
   }
 }
 
+/**
+ * Load prompt from file or return as-is if it's inline text.
+ * Supports paths like '.github/prompts/system.md'
+ */
+function loadPrompt(promptInput: string | undefined, workspaceRoot: string): string | undefined {
+  if (!promptInput) {
+    return undefined
+  }
+
+  // If it looks like a file path (contains .md, .txt, or starts with .github/)
+  if (promptInput.includes('.md') || promptInput.includes('.txt') || promptInput.startsWith('.github/')) {
+    try {
+      const promptPath = path.isAbsolute(promptInput) ? promptInput : path.join(workspaceRoot, promptInput)
+      
+      if (fs.existsSync(promptPath)) {
+        core.info(`Loading prompt from file: ${promptPath}`)
+        return fs.readFileSync(promptPath, 'utf-8')
+      } else {
+        core.warning(`Prompt file not found: ${promptPath}, using as inline text`)
+        return promptInput
+      }
+    } catch (error) {
+      core.warning(`Error reading prompt file: ${error}, using as inline text`)
+      return promptInput
+    }
+  }
+
+  // Return as inline text
+  return promptInput
+}
+
 export async function analyzeWorkflowFailure(config: AnalyzerConfig): Promise<AnalysisResult> {
   core.info(`Fetching logs for workflow run ${config.runId}`)
 
@@ -105,8 +142,15 @@ export async function analyzeWorkflowFailure(config: AnalyzerConfig): Promise<An
   core.info(`Initializing ${config.llmProvider} LLM client`)
   const llm = createLLMClient(config)
 
+  // Determine workspace root (GitHub Actions sets GITHUB_WORKSPACE)
+  const workspaceRoot = process.env.GITHUB_WORKSPACE || process.cwd()
+
+  // Load custom prompts or use defaults
+  const customSystemPrompt = loadPrompt(config.customSystemPrompt, workspaceRoot)
+  const customUserPrompt = loadPrompt(config.customUserPrompt, workspaceRoot)
+
   // Prepare the prompt
-  const systemPrompt = `You are an expert DevOps engineer analyzing GitHub Actions workflow failures. 
+  const systemPrompt = customSystemPrompt || `You are an expert DevOps engineer analyzing GitHub Actions workflow failures. 
 Your task is to analyze the provided workflow logs and provide a clear, actionable summary that helps developers quickly understand and fix the issues.
 
 Focus on:
@@ -138,9 +182,18 @@ ${job.logContent}
     )
     .join('\n---\n')
 
-  const userPrompt = `Analyze the following failed GitHub Actions workflow jobs and provide a comprehensive summary:
+  // Add memory context if available
+  let memoryContext = ''
+  if (config.memoryData) {
+    const { MemoryManager } = await import('./memory-manager')
+    memoryContext = MemoryManager.formatMemoryForPrompt(config.memoryData)
+  }
 
-${failedJobsInfo}
+  const userPrompt = customUserPrompt 
+    ? customUserPrompt.replace('{{FAILED_JOBS}}', failedJobsInfo).replace('{{MEMORY_CONTEXT}}', memoryContext)
+    : `Analyze the following failed GitHub Actions workflow jobs and provide a comprehensive summary:
+
+${failedJobsInfo}${memoryContext}
 
 Please provide your analysis in the format specified in the system prompt.`
 

@@ -1,3 +1,4 @@
+import { MemoryData } from './memory-manager';
 interface AnalyzerConfig {
     githubToken: string;
     owner: string;
@@ -14,6 +15,9 @@ interface AnalyzerConfig {
     anthropicApiKey?: string;
     anthropicModel?: string;
     maxLogLines: number;
+    customSystemPrompt?: string;
+    customUserPrompt?: string;
+    memoryData?: MemoryData | null;
 }
 interface AnalysisResult {
     summary: string;
