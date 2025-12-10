@@ -31,13 +31,18 @@ jobs:
     # Run this job if any previous job failed
     if: failure()
     needs: [test]
+    permissions:
+      actions: read
+      contents: read
     
     steps:
+      - uses: actions/checkout@v4
+      
       - name: Analyze Workflow Failure with OpenAI
         uses: ./  # Use local action for testing
         if: github.event_name == 'push' && vars.OPENAI_API_KEY != ''
         with:
-          github-token: ${{ secrets.ACTION_GITHUB_TOKEN }}
+          github-token: ${{ github.token }}
           llm-provider: 'openai'
           openai-api-key: ${{ secrets.OPENAI_API_KEY }}
           openai-model: 'gpt-4o-mini'
@@ -47,7 +52,7 @@ jobs:
         uses: ./
         if: github.event_name == 'push' && vars.GITHUB_MODELS_TOKEN != ''
         with:
-          github-token: ${{ secrets.ACTION_GITHUB_TOKEN }}
+          github-token: ${{ github.token }}
           llm-provider: 'github-models'
           github-models-token: ${{ secrets.GITHUB_MODELS_TOKEN }}
           github-models-model: 'gpt-4o'
@@ -56,7 +61,7 @@ jobs:
         uses: ./
         if: github.event_name == 'push' && vars.ANTHROPIC_API_KEY != ''
         with:
-          github-token: ${{ secrets.ACTION_GITHUB_TOKEN }}
+          github-token: ${{ github.token }}
           llm-provider: 'anthropic'
           anthropic-api-key: ${{ secrets.ANTHROPIC_API_KEY }}
           anthropic-model: 'claude-3-5-sonnet-20241022'
