@@ -6,6 +6,7 @@ import { ChatAnthropic } from '@langchain/anthropic'
 import { BaseChatModel } from '@langchain/core/language_models/chat_models'
 import { HumanMessage, SystemMessage } from '@langchain/core/messages'
 import { getWorkflowRunLogs } from './github-client'
+import { MemoryData } from './memory-manager'
 
 interface AnalyzerConfig {
   githubToken: string
@@ -25,6 +26,7 @@ interface AnalyzerConfig {
   maxLogLines: number
   customSystemPrompt?: string
   customUserPrompt?: string
+  memoryData?: MemoryData | null
 }
 
 interface AnalysisResult {
@@ -180,11 +182,30 @@ ${job.logContent}
     )
     .join('\n---\n')
 
+  // Add memory context if available
+  let memoryContext = ''
+  if (config.memoryData) {
+    const { MemoryManager } = await import('./memory-manager')
+    const tempManager = new MemoryManager({
+      enabled: true,
+      strategy: 'actions-cache',
+      scope: 'branch',
+      retentionDays: 30,
+      maxHistoricalRuns: 10,
+      includeCommitChanges: true,
+      githubToken: config.githubToken,
+      owner: config.owner,
+      repo: config.repo,
+      branch: 'main'
+    })
+    memoryContext = tempManager.formatMemoryForPrompt(config.memoryData)
+  }
+
   const userPrompt = customUserPrompt 
-    ? customUserPrompt.replace('{{FAILED_JOBS}}', failedJobsInfo)
+    ? customUserPrompt.replace('{{FAILED_JOBS}}', failedJobsInfo).replace('{{MEMORY_CONTEXT}}', memoryContext)
     : `Analyze the following failed GitHub Actions workflow jobs and provide a comprehensive summary:
 
-${failedJobsInfo}
+${failedJobsInfo}${memoryContext}
 
 Please provide your analysis in the format specified in the system prompt.`
 

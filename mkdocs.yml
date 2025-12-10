@@ -83,6 +83,7 @@ nav:
     - CI/CD Patterns: integrations/cicd.md
   - Advanced:
     - Architecture: advanced/architecture.md
+    - Memory & Caching: advanced/memory-and-caching.md
     - Security: advanced/security.md
     - Troubleshooting: advanced/troubleshooting.md
   - Examples:

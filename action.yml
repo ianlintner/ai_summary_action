@@ -77,6 +77,36 @@ inputs:
   custom-user-prompt:
     description: 'Custom user prompt template for AI analysis (overrides default). Supports file paths like .github/prompts/user.md'
     required: false
+  
+  enable-memory:
+    description: 'Enable memory and caching for context-aware analysis'
+    required: false
+    default: 'false'
+  
+  cache-strategy:
+    description: 'Cache storage strategy (actions-cache, github-issues, git-notes)'
+    required: false
+    default: 'actions-cache'
+  
+  memory-scope:
+    description: 'Scope of memory (branch, repository, workflow)'
+    required: false
+    default: 'branch'
+  
+  memory-retention-days:
+    description: 'Number of days to retain memory data'
+    required: false
+    default: '30'
+  
+  max-historical-runs:
+    description: 'Maximum number of historical runs to include in analysis'
+    required: false
+    default: '10'
+  
+  include-commit-changes:
+    description: 'Include recent commit changes in analysis context'
+    required: false
+    default: 'true'
 
 outputs:
   summary:
@@ -87,6 +117,15 @@ outputs:
   
   issue-url:
     description: 'URL of the created issue (if create-issue is true)'
+  
+  historical-failures:
+    description: 'JSON array of previous failure summaries (if enable-memory is true)'
+  
+  branch-patterns:
+    description: 'Detected patterns from branch history (if enable-memory is true)'
+  
+  similar-issues:
+    description: 'Links to similar past issues (if enable-memory is true)'
 
 runs:
   using: 'node20'

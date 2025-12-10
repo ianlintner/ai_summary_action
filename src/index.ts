@@ -2,6 +2,7 @@ import * as core from '@actions/core'
 import * as github from '@actions/github'
 import { analyzeWorkflowFailure } from './analyzer'
 import { createIssueWithSummary } from './github-client'
+import { MemoryManager } from './memory-manager'
 
 async function run(): Promise<void> {
   try {
@@ -29,12 +30,48 @@ async function run(): Promise<void> {
     const customSystemPrompt = core.getInput('custom-system-prompt')
     const customUserPrompt = core.getInput('custom-user-prompt')
 
+    // Get memory configuration
+    const enableMemory = core.getInput('enable-memory') === 'true'
+    const cacheStrategy = core.getInput('cache-strategy') as 'actions-cache' | 'github-issues' | 'git-notes'
+    const memoryScope = core.getInput('memory-scope') as 'branch' | 'repository' | 'workflow'
+    const memoryRetentionDays = parseInt(core.getInput('memory-retention-days') || '30')
+    const maxHistoricalRuns = parseInt(core.getInput('max-historical-runs') || '10')
+    const includeCommitChanges = core.getInput('include-commit-changes') === 'true'
+
     // Get GitHub context
     const context = github.context
     const { owner, repo } = context.repo
     const runId = context.runId
+    const branch = context.ref.replace('refs/heads/', '')
+    const commit = context.sha
 
     core.info(`Analyzing workflow run ${runId} for ${owner}/${repo}`)
+
+    // Initialize memory manager
+    let memoryManager: MemoryManager | undefined
+    let existingMemory = null
+
+    if (enableMemory) {
+      memoryManager = new MemoryManager({
+        enabled: enableMemory,
+        strategy: cacheStrategy,
+        scope: memoryScope,
+        retentionDays: memoryRetentionDays,
+        maxHistoricalRuns,
+        includeCommitChanges,
+        githubToken,
+        owner,
+        repo,
+        branch,
+        workflowName: context.workflow
+      })
+
+      // Load existing memory
+      existingMemory = await memoryManager.loadMemory()
+      if (existingMemory) {
+        core.info(`Loaded ${existingMemory.failures.length} historical failures`)
+      }
+    }
 
     // Analyze the workflow failure
     const result = await analyzeWorkflowFailure({
@@ -54,12 +91,33 @@ async function run(): Promise<void> {
       anthropicModel,
       maxLogLines,
       customSystemPrompt,
-      customUserPrompt
+      customUserPrompt,
+      memoryData: existingMemory
     })
 
     // Set outputs
     core.setOutput('summary', result.summary)
     core.setOutput('failed-jobs', JSON.stringify(result.failedJobs))
+
+    // Set memory outputs if enabled
+    if (enableMemory && existingMemory) {
+      core.setOutput('historical-failures', JSON.stringify(existingMemory.failures.slice(-5)))
+      core.setOutput('branch-patterns', JSON.stringify(existingMemory.branchHistory))
+      // TODO: Implement similar issues detection
+      core.setOutput('similar-issues', '[]')
+    }
+
+    // Update memory with this failure
+    if (memoryManager) {
+      const updatedMemory = await memoryManager.addFailure(
+        existingMemory,
+        runId,
+        commit,
+        result.summary,
+        result.failedJobs
+      )
+      await memoryManager.saveMemory(updatedMemory)
+    }
 
     // Display summary
     core.summary.addHeading('🔍 AI Workflow Failure Analysis', 1)
