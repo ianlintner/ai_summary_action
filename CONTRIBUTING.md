@@ -1,66 +1,188 @@
-# Contributing to AI Summary Action
+# Contributing to AI Workflow Failure Summary Action
 
-Thank you for your interest in contributing! Here are some guidelines to help you get started.
+Thank you for your interest in contributing! This guide will help you get started with development.
 
-## Development Setup
+## 📖 Full Documentation
 
-1. Fork and clone the repository:
+For comprehensive contribution guidelines, please see our [Contributing Guide](https://ianlintner.github.io/ai_summary_action/contributing/) in the documentation.
+
+## Quick Start
+
+### Development Setup
+
+1. **Fork and Clone**
 ```bash
 git clone https://github.com/yourusername/ai_summary_action.git
 cd ai_summary_action
 ```
 
-2. Install dependencies:
+2. **Install Dependencies**
 ```bash
 npm install
 ```
 
-3. Make your changes in the `src/` directory
+3. **Make Changes**
+- Edit files in the `src/` directory
+- Update documentation in `docs/` if needed
 
-4. Format and lint your code:
+4. **Build and Test**
 ```bash
+# Format code
 npm run format
+
+# Lint code
 npm run lint
+
+# Build the action
+npm run build
 ```
 
-5. Build the action:
+5. **Test Your Changes**
+```bash
+# Test locally
+export INPUT_GITHUB_TOKEN="your-token"
+export INPUT_OPENAI_API_KEY="your-key"
+node dist/index.js
+```
+
+## Pull Request Process
+
+1. **Create a Branch**
+```bash
+git checkout -b feature/your-feature-name
+```
+
+2. **Make Your Changes**
+- Follow existing code style
+- Add/update tests as needed
+- Update documentation
+
+3. **Build and Commit**
 ```bash
 npm run build
+git add .
+git commit -m "feat: add your feature"
+```
+
+⚠️ **Important:** Always commit the `dist/` directory after building!
+
+4. **Push and Create PR**
+```bash
+git push origin feature/your-feature-name
+```
+
+Then open a pull request on GitHub.
+
+## Code Style
+
+- ✅ Use TypeScript for all code
+- ✅ Follow Prettier formatting (runs automatically)
+- ✅ Pass ESLint checks
+- ✅ Add JSDoc comments for functions
+- ✅ Keep functions small and focused
+
+## Project Structure
+
+```
+ai_summary_action/
+├── src/                    # Source code
+│   ├── index.ts           # Main entry point
+│   ├── analyzer.ts        # AI analysis logic
+│   ├── github-client.ts   # GitHub API interactions
+│   └── memory-manager.ts  # Memory/caching features
+├── docs/                   # MkDocs documentation
+├── .github/
+│   ├── workflows/         # GitHub Actions workflows
+│   └── prompts/           # Example prompt templates
+├── dist/                   # Built JavaScript (committed)
+└── action.yml             # Action metadata
 ```
 
 ## Testing
 
-Before submitting a pull request:
+### Unit Tests (when available)
+```bash
+npm test
+```
 
-1. Ensure your code builds without errors: `npm run build`
-2. Test the action in a workflow (see `.github/workflows/example.yml`)
-3. Verify all formatting and linting passes
+### Integration Testing
+Create a test workflow in your fork:
 
-## Submitting Changes
+```yaml
+name: Test My Changes
+on: workflow_dispatch
 
-1. Create a new branch for your feature/fix
-2. Make your changes
-3. Commit with clear, descriptive messages
-4. Push to your fork
-5. Open a pull request
+jobs:
+  fail-test:
+    runs-on: ubuntu-latest
+    steps:
+      - run: exit 1
+  
+  test-action:
+    if: failure()
+    needs: [fail-test]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          openai-api-key: ${{ secrets.OPENAI_API_KEY }}
+```
 
-## Code Style
+## Adding New Features
 
-- Use TypeScript for all new code
-- Follow the existing code style (enforced by Prettier and ESLint)
-- Add JSDoc comments for public functions
-- Keep functions focused and single-purpose
+### Adding an LLM Provider
 
-## Adding LLM Providers
+1. Add provider config to `action.yml`
+2. Update `createLLMClient()` in `src/analyzer.ts`
+3. Add LangChain dependency if needed
+4. Document in `docs/usage/providers.md`
+5. Add example to README
 
-To add support for a new LLM provider:
+### Adding Documentation
 
-1. Add the provider configuration to `action.yml` inputs
-2. Update the `createLLMClient` function in `src/analyzer.ts`
-3. Add LangChain dependencies if needed
-4. Document usage in README.md
-5. Add example workflow
+1. Create/edit files in `docs/`
+2. Update `mkdocs.yml` navigation
+3. Test locally:
+```bash
+pip install mkdocs-material mkdocs-mermaid2-plugin
+mkdocs serve
+```
 
-## Questions?
+## Commit Message Format
 
-Feel free to open an issue for questions or discussions.
+Use [Conventional Commits](https://www.conventionalcommits.org/):
+
+- `feat:` - New feature
+- `fix:` - Bug fix
+- `docs:` - Documentation changes
+- `chore:` - Maintenance tasks
+- `refactor:` - Code refactoring
+- `test:` - Test updates
+
+Examples:
+```
+feat: add memory caching feature
+fix: resolve log truncation issue
+docs: improve quickstart guide
+```
+
+## Code of Conduct
+
+This project adheres to the [Code of Conduct](CODE_OF_CONDUCT.md). By participating, you are expected to uphold this code.
+
+## Getting Help
+
+- 📖 [Full Documentation](https://ianlintner.github.io/ai_summary_action/)
+- 💬 [GitHub Discussions](https://github.com/ianlintner/ai_summary_action/discussions)
+- 🐛 [Report Issues](https://github.com/ianlintner/ai_summary_action/issues)
+
+## Recognition
+
+Contributors are recognized in:
+- Release notes
+- README contributors section
+- GitHub's contributor graph
+
+Thank you for contributing! 🎉
