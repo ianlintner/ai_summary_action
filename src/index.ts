@@ -79,6 +79,8 @@ async function run(): Promise<void> {
   } catch (error) {
     if (error instanceof Error) {
       core.setFailed(error.message)
+    } else {
+      core.setFailed('Unknown error occurred during workflow analysis')
     }
   }
 }

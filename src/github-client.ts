@@ -66,8 +66,16 @@ export async function getWorkflowRunLogs(
           logContent = logResponse.data
         } else if (logResponse.url) {
           // Fetch from the URL
-          const response = await fetch(logResponse.url)
-          logContent = await response.text()
+          try {
+            const response = await fetch(logResponse.url)
+            if (!response.ok) {
+              throw new Error(`Failed to fetch logs: ${response.statusText}`)
+            }
+            logContent = await response.text()
+          } catch (fetchError) {
+            core.warning(`Failed to fetch log content from URL: ${fetchError}`)
+            continue
+          }
         }
 
         // Truncate to max lines (keep last N lines as they usually contain errors)
@@ -129,12 +137,13 @@ ${summary}
 `
 
   try {
+    const labels = label ? [label] : []
     const { data: issue } = await octokit.rest.issues.create({
       owner,
       repo,
       title,
       body,
-      labels: [label]
+      labels
     })
 
     return issue.html_url
